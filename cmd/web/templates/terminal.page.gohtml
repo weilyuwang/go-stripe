@@ -5,8 +5,53 @@ Virtual Terminal
 {{end}}
 
 {{define "content"}}
-<h2>Virtual Terminal</h2>
+<h2 class="mt-5 mb-3 text-center">Virtual Terminal</h2>
+<hr>
+
+<form
+  action="/payment-succeeded"
+  method="post"
+  name="charge_form"
+  id="charge_form"
+  class="d-block needs-validation charge-form"
+  autocomplete="off"
+  novalidate
+>
+  <div class="mb-3">
+    <label for="amount" class="form-label">Amount</label>
+    <input type="text" class="form-control" id="amount" name="amount" required autocomplete="amount-new">
+  </div>
+
+  <div class="mb-3">
+    <label for="cardholder-name" class="form-label">Cardholder Name</label>
+    <input type="text" class="form-control" id="cardholder-name" name="cardholder-name" required autocomplete="cardholder-name-new">
+  </div>
+
+  <div class="mb-3">
+    <label for="cardholder-email" class="form-label">Cardholder Email</label>
+    <input type="email" class="form-control" id="cardholder-email" name="cardholder-email" required autocomplete="cardholder-email-new">
+  </div>
+
+  <!-- card number will be built by stripe -->
+  <div class="mb-3">
+    <label for="card-element" class="form-label">Credit Card</label>
+    <div id="card-element" class="form-control"></div>
+    <div class="alert-danger text-center" id="card-errors" role="alert"></div>
+    <div class="alert-success text-center" id="card-success" role="alert"></div>
+  </div>
+
+  <hr>
+
+  <a href="javascript:void(0)" id="pay-button" class="btn btn-primary" onclick="val()">Charge Card</a>
+</form>
 {{end}}
 
 {{define "js"}}
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <script>
+  function val() {
+
+  }
+  </script>
 {{end}}
