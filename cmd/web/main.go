@@ -44,7 +44,7 @@ func (app *application) serve() error {
 		IdleTimeout:       30 * time.Second,
 	}
 
-	app.infoLog.Printf("Starting HTTP server in %s on port %d", app.config.env, app.config.port)
+	app.infoLog.Printf("Starting HTTP server in %s mode on port %d", app.config.env, app.config.port)
 
 	return srv.ListenAndServe()
 }
