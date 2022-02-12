@@ -69,7 +69,7 @@ func (app *application) parseTemplate(partials []string, page string, templateTo
 	var t *template.Template
 	var err error
 
-	// build partials
+	// build partials (if any)
 	if len(partials) > 0 {
 		for i, x := range partials {
 			partials[i] = fmt.Sprintf("templates/%s.partial.tmpl", x)
