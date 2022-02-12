@@ -32,10 +32,9 @@ Virtual Terminal
     <input type="email" class="form-control" id="cardholder-email" name="cardholder-email" required autocomplete="cardholder-email-new">
   </div>
 
-  <!-- card number will be built by stripe -->
   <div class="mb-3">
     <label for="card-element" class="form-label">Credit Card</label>
-    <div id="card-element" class="form-control"></div>
+    <div id="card-element" class="form-control"><!--Stripe.js injects the Card Element--></div>
     <div class="alert-danger text-center" id="card-errors" role="alert"></div>
     <div class="alert-success text-center" id="card-success" role="alert"></div>
   </div>
@@ -50,6 +49,42 @@ Virtual Terminal
   <script src="https://js.stripe.com/v3/"></script>
 
   <script>
+    let card;
+    let stripe;
+
+    // initialize stripe
+    stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+
+    (function() {
+      // Stripe Elements are customizable UI components used to collect sensitive information in your payment forms.
+      const elements = stripe.elements();
+      const style = {
+        base: {
+          fontSize: '16px',
+          lineHeight: '24px',
+        }
+      };
+      // create card entry
+      card = elements.create('card', {
+        style: style,
+        hidePostalCode: false,
+      })
+      // Stripe injects an iframe into the DOM
+      card.mount('#card-element')
+
+      // check for input errors
+      card.addEventListener('change', function(event) {
+        let displayError = document.getElementById('card-errors')
+        if (event.error) {
+          displayError.classList.remove('d-none');
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.classList.add('d-none');
+          displayError.textContent = '';
+        }
+      })
+    })();
+
   function val() {
 
   }
