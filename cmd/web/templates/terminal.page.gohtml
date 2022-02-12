@@ -8,6 +8,7 @@ Virtual Terminal
 <h2 class="mt-5 mb-3 text-center">Virtual Terminal</h2>
 <hr>
 
+<div class="alert alert-danger text-center d-none" id="card-messages"></div>
 <form
   action="/payment-succeeded"
   method="post"
@@ -41,7 +42,13 @@ Virtual Terminal
 
   <hr>
 
-  <a href="javascript:void(0)" id="pay-button" class="btn btn-primary" onclick="val()">Charge Card</a>
+  <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="val()">Charge Card</a>
+
+  <div id="processing-payment" class="text-center d-none">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
 </form>
 {{end}}
 
@@ -51,8 +58,11 @@ Virtual Terminal
   <script>
     let card;
     let stripe;
+    const cardMessages = document.getElementById("card-messages")
+    const payButton = document.getElementById("pay-button")
+    const processing = document.getElementById("processing-payment")
 
-    // initialize stripe
+    // initialize stripe with public key
     stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
     (function() {
@@ -85,8 +95,16 @@ Virtual Terminal
       })
     })();
 
-  function val() {
-
-  }
+    // cliend-side validation
+    function val() {
+      let form = document.getElementById("charge_form");
+      if (form.checkValidity() === false) {
+        this.event.preventDefault();
+        this.event.stopPropagation();
+        form.classList.add("was-validated");
+        return;
+      }
+      form.classList.add("was-validated");
+    }
   </script>
 {{end}}
