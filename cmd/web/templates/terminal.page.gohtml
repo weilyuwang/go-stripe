@@ -25,12 +25,12 @@ Virtual Terminal
 
   <div class="mb-3">
     <label for="cardholder-name" class="form-label">Cardholder Name</label>
-    <input type="text" class="form-control" id="cardholder-name" name="cardholder-name" required autocomplete="cardholder-name-new">
+    <input type="text" class="form-control" id="cardholder-name" name="cardholder_name" required autocomplete="cardholder-name-new">
   </div>
 
   <div class="mb-3">
     <label for="cardholder-email" class="form-label">Cardholder Email</label>
-    <input type="email" class="form-control" id="cardholder-email" name="cardholder-email" required autocomplete="cardholder-email-new">
+    <input type="email" class="form-control" id="cardholder-email" name="email" required autocomplete="cardholder-email-new">
   </div>
 
   <div class="mb-3">
@@ -174,13 +174,14 @@ Virtual Terminal
               } else if(result.paymentIntent) {
                 if(result.paymentIntent.status === "succeeded") {
                   // we have charged the card
-                  document.getElementById("payment_method").value = result.paymentIntent.payment_method_types[0];
+                  document.getElementById("payment_method").value = result.paymentIntent.payment_method_types[0]; // 'card'
                   document.getElementById("payment_intent").value = result.paymentIntent.id;
                   document.getElementById("payment_amount").value = result.paymentIntent.amount;
                   document.getElementById("payment_currency").value = result.paymentIntent.currency;
                   processing.classList.add("d-none");
                   showCardSuccess();
-                  // would submit the form
+                  // submit the form
+                  document.getElementById("charge_form").submit();
                 }
               }
             })
