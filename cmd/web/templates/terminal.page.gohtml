@@ -68,7 +68,7 @@ Virtual Terminal
     const processing = document.getElementById("processing-payment")
 
     // initialize stripe with public key
-    stripe = Stripe('pk_test_51GzmrmEfLuseb67nBpvjxHmep8tGxj8DNiLHC48E8481QYlshdSXYNiDDpK60SdYDySNZ6tzn1vM5k3xwdXjOnqo0067GjfmxI');
+    stripe = Stripe({{index .StringMap "publishable_key"}});
 
     (function() {
       // Stripe Elements are customizable UI components used to collect sensitive information in your payment forms.
@@ -151,7 +151,7 @@ Virtual Terminal
         body: JSON.stringify(payload),
       }
 
-      fetch("http://localhost:4001/api/payment-intent", requestOptions)
+      fetch("{{.API}}/api/payment-intent", requestOptions)
         .then(response => response.text())
         .then(response => {
           let data;
@@ -186,7 +186,6 @@ Virtual Terminal
               }
             })
           } catch (err) {
-            console.log(err);
             showCardError("Invalid response from payment gateway!");
             showPayButtons();
           }
