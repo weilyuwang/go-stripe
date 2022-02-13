@@ -1,4 +1,4 @@
-package card
+package cards
 
 import (
 	"github.com/stripe/stripe-go/v72"
@@ -50,23 +50,23 @@ func cardErrorMessage(code stripe.ErrorCode) string {
 	var msg = ""
 	switch code {
 	case stripe.ErrorCodeCardDeclined:
-		msg = "Your card was declined"
+		msg = "Your cards was declined"
 	case stripe.ErrorCodeExpiredCard:
-		msg = "Your card is expired"
+		msg = "Your cards is expired"
 	case stripe.ErrorCodeIncorrectCVC:
 		msg = "Incorrect CVC code"
 	case stripe.ErrorCodeIncorrectZip:
 		msg = "Incorrect zip/postal code"
 	case stripe.ErrorCodeAmountTooLarge:
-		msg = "The amount is too large to charge to your card"
+		msg = "The amount is too large to charge to your cards"
 	case stripe.ErrorCodeAmountTooSmall:
-		msg = "The amount is too small to charge to your card"
+		msg = "The amount is too small to charge to your cards"
 	case stripe.ErrorCodeBalanceInsufficient:
 		msg = "Insufficient balance"
 	case stripe.ErrorCodePostalCodeInvalid:
 		msg = "Your postal code is invalid"
 	default:
-		msg = "Your card was declined"
+		msg = "Your cards was declined"
 	}
 	return msg
 }
