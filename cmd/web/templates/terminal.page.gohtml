@@ -49,6 +49,11 @@ Virtual Terminal
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
+
+  <input type="hidden" name="payment_intent" id="payment_intent">
+  <input type="hidden" name="payment_method" id="payment_method">
+  <input type="hidden" name="payment_amount" id="payment_amount">
+  <input type="hidden" name="payment_currency" id="payment_currency">
 </form>
 {{end}}
 
@@ -100,7 +105,6 @@ Virtual Terminal
       })
     })();
 
-    // cliend-side validation
     function val() {
       let form = document.getElementById("charge_form");
       if (form.checkValidity() === false) {
@@ -111,6 +115,34 @@ Virtual Terminal
       }
       form.classList.add("was-validated");
       hidePayButton();
+
+      let amountToCharge = String(parseFloat(document.getElementById("amount").value) * 100);
+
+      let payload = {
+        amount: amountToCharge,
+        currency: 'cad',
+      }
+
+      const requestOptions = {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+
+      fetch("http://localhost:4001/api/payment-intent", requestOptions)
+        .then(response => response.text())
+        .then(response => {
+          let data;
+          try {
+            data = JSON.parse(response);
+            console.log(data);
+          } catch (err) {
+            console.log(err);
+          }
+        })
     }
   </script>
 {{end}}
