@@ -8,4 +8,56 @@ Buy one widget
 <h2 class="mt-3 text-center">Buy One Widget</h2>
 <hr>
 <img src="/static/widget.png" alt="widget" class="image-fluid rounded mx-auto d-block">
+
+<div class="alert alert-danger text-center d-none" id="card-messages"></div>
+<form
+        action="/payment-succeeded"
+        method="post"
+        name="charge_form"
+        id="charge_form"
+        class="d-block needs-validation charge-form"
+        autocomplete="off"
+        novalidate
+>
+  <div class="mb-3">
+    <label for="amount" class="form-label">Amount</label>
+    <input type="text" class="form-control" id="amount" name="amount" required autocomplete="amount-new">
+  </div>
+
+  <div class="mb-3">
+    <label for="cardholder-name" class="form-label">Cardholder Name</label>
+    <input type="text" class="form-control" id="cardholder-name" name="cardholder_name" required autocomplete="cardholder-name-new">
+  </div>
+
+  <div class="mb-3">
+    <label for="cardholder-email" class="form-label">Cardholder Email</label>
+    <input type="email" class="form-control" id="cardholder-email" name="email" required autocomplete="cardholder-email-new">
+  </div>
+
+  <div class="mb-3">
+    <label for="card-element" class="form-label">Credit Card</label>
+    <div id="card-element" class="form-control"><!--Stripe.js injects the Card Element--></div>
+    <div class="alert-danger text-center" id="card-errors" role="alert"></div>
+    <div class="alert-success text-center" id="card-success" role="alert"></div>
+  </div>
+
+  <hr>
+
+  <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="val()">Charge Card</a>
+
+  <div id="processing-payment" class="text-center d-none">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <input type="hidden" name="payment_intent" id="payment_intent">
+  <input type="hidden" name="payment_method" id="payment_method">
+  <input type="hidden" name="payment_amount" id="payment_amount">
+  <input type="hidden" name="payment_currency" id="payment_currency">
+</form>
+{{end}}
+
+{{define "js"}}
+    {{template "stripe-js" .}}
 {{end}}
