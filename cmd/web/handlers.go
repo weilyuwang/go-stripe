@@ -45,3 +45,11 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 		return
 	}
 }
+
+// ChargeOnce displays the page to buy one widget
+func (app *application) ChargeOnce(w http.ResponseWriter, r *http.Request) {
+	if err := app.renderTemplate(w, r, "buy-once", nil); err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+}
