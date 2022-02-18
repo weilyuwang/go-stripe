@@ -8,7 +8,7 @@
     const processing = document.getElementById("processing-payment")
 
     // initialize stripe with public key
-    stripe = Stripe({{index .StringMap "publishable_key"}});
+    stripe = Stripe({{.StripePublishableKey}});
 
     (function() {
       // Stripe Elements are customizable UI components used to collect sensitive information in your payment forms.
