@@ -5,24 +5,28 @@ Buy one widget
 {{end}}
 
 {{define "content"}}
+{{$widget := index .Data "widget"}}
 <h2 class="mt-3 text-center">Buy One Widget</h2>
 <hr>
 <img src="/static/widget.png" alt="widget" class="image-fluid rounded mx-auto d-block">
 
 <div class="alert alert-danger text-center d-none" id="card-messages"></div>
 <form
-        action="/payment-succeeded"
-        method="post"
-        name="charge_form"
-        id="charge_form"
-        class="d-block needs-validation charge-form"
-        autocomplete="off"
-        novalidate
+  action="/payment-succeeded"
+  method="post"
+  name="charge_form"
+  id="charge_form"
+  class="d-block needs-validation charge-form"
+  autocomplete="off"
+  novalidate
 >
-  <div class="mb-3">
-    <label for="amount" class="form-label">Amount</label>
-    <input type="text" class="form-control" id="amount" name="amount" required autocomplete="amount-new">
-  </div>
+
+  <input type="hidden" name="product_id" value="{{$widget.ID}}">
+  <input type="hidden" name="amount" value="{{$widget.Price}}">
+
+  <h3 class="mt-3 mb-3 text-center">{{$widget.Name}}: {{$widget.Price}}</h3>
+  <p>{{$widget.Description}}</p>
+  <hr>
 
   <div class="mb-3">
     <label for="cardholder-name" class="form-label">Cardholder Name</label>
