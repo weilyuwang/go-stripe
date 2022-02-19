@@ -1,0 +1,16 @@
+create_table("transactions") {
+    t.Column("id", "integer", {primary: true})
+    t.Column("amount", "integer", {})
+    t.Column("currency", "string", {})
+    t.Column("last_four", "string", {})
+    t.Column("bank_return_code", "string", {})
+    t.Column("transaction_status_id", "integer", {"unsigned": true})
+}
+
+sql("alter table transactions alter column created_at set default now();")
+sql("alter table transactions alter column updated_at set default now();")
+
+add_foreign_key("transactions", "transaction_status_id", {"transaction_statuses": ["id"]}, {
+    "on_delete": "cascade",
+    "on_update": "cascade",
+})

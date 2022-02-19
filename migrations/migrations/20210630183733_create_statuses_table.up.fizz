@@ -1,0 +1,16 @@
+create_table("statuses") {
+    t.Column("id", "integer", {primary: true})
+    t.Column("name", "string", {})
+}
+
+sql("alter table statuses alter column created_at set default now();")
+sql("alter table statuses alter column updated_at set default now();")
+
+sql("insert into statuses (name) values ('Cleared');")
+sql("insert into statuses (name) values ('Refunded');")
+sql("insert into statuses (name) values ('Cancelled');")
+
+add_foreign_key("orders", "status_id", {"statuses": ["id"]}, {
+    "on_delete": "cascade",
+    "on_update": "cascade",
+})
