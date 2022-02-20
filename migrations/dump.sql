@@ -50,7 +50,7 @@ CREATE TABLE `schema_migration` (
 
 LOCK TABLES `schema_migration` WRITE;
 /*!40000 ALTER TABLE `schema_migration` DISABLE KEYS */;
-INSERT INTO `schema_migration` VALUES ('20210630180628'),('20210630180635'),('20210630181022'),('20210630183342'),('20210630183733'),('20210630184028');
+INSERT INTO `schema_migration` VALUES ('20210630180628'),('20210630180635'),('20210630181022'),('20210630183342'),('20210630183733'),('20210630184028'),('20220220031419');
 /*!40000 ALTER TABLE `schema_migration` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `statuses`;
@@ -140,13 +140,14 @@ CREATE TABLE `widgets` (
   `price` int(11) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `image` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `widgets` WRITE;
 /*!40000 ALTER TABLE `widgets` DISABLE KEYS */;
-INSERT INTO `widgets` VALUES (1,'Widget','A very nice widget.',10,1000,'2022-02-19 03:58:57','2022-02-19 03:58:57');
+INSERT INTO `widgets` VALUES (1,'Widget','A very nice widget.',10,1000,'2022-02-19 03:58:57','2022-02-19 03:58:57','');
 /*!40000 ALTER TABLE `widgets` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

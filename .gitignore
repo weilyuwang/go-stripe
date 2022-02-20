@@ -26,3 +26,5 @@ dist
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# ignore Makefile as it contains stripe secret key
+Makefile
