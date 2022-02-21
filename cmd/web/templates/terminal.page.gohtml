@@ -19,8 +19,8 @@ Virtual Terminal
   novalidate
 >
   <div class="mb-3">
-    <label for="amount" class="form-label">Amount</label>
-    <input type="text" class="form-control" id="amount" name="amount" required autocomplete="amount-new">
+    <label for="charge_amount" class="form-label">Amount</label>
+    <input type="text" class="form-control" id="charge_amount" name="charge_amount" required autocomplete="charge_amount-new">
   </div>
 
   <div class="mb-3">
@@ -50,6 +50,7 @@ Virtual Terminal
     </div>
   </div>
 
+  <input type="hidden" name="amount" id="amount">
   <input type="hidden" name="payment_intent" id="payment_intent">
   <input type="hidden" name="payment_method" id="payment_method">
   <input type="hidden" name="payment_amount" id="payment_amount">
@@ -58,5 +59,15 @@ Virtual Terminal
 {{end}}
 
 {{define "js"}}
+  <script>
+    let el = document.getElementById("charge_amount")
+    el.addEventListener("change", (event) => {
+      if(event.target.value !== "") {
+        document.getElementById("amount").value = event.target.value * 100;
+      } else {
+        document.getElementById("amount").value = 0;
+      }
+    });
+  </script>
  {{template "stripe-js" .}}
 {{end}}
