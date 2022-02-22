@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/alexedwards/scs/v2"
 	"github.com/weilyuwang/go-stripe/internal/driver"
 	"github.com/weilyuwang/go-stripe/internal/models"
 	"html/template"
@@ -14,6 +15,8 @@ import (
 
 const version = "1.0.0"
 const cssVersion = "1"
+
+var sessionManager *scs.SessionManager
 
 type config struct {
 	port int
@@ -35,6 +38,7 @@ type application struct {
 	templateCache map[string]*template.Template
 	version       string
 	DB            models.DBModel
+	Session       *scs.SessionManager
 }
 
 func (app *application) serve() error {
@@ -72,6 +76,11 @@ func main() {
 	}
 	defer conn.Close()
 
+	// set up session
+	// Initialize a new session manager and configure the session lifetime.
+	sessionManager = scs.New()
+	sessionManager.Lifetime = 24 * time.Hour
+
 	// template cache
 	tc := make(map[string]*template.Template)
 
@@ -82,6 +91,7 @@ func main() {
 		templateCache: tc,
 		version:       version,
 		DB:            models.DBModel{DB: conn},
+		Session:       sessionManager,
 	}
 
 	err = app.serve()
