@@ -114,7 +114,7 @@
               } else if(result.paymentIntent) {
                 if(result.paymentIntent.status === "succeeded") {
                   // we have charged the card
-                  document.getElementById("payment_method").value = result.paymentIntent.payment_method_types[0]; // 'card'
+                  document.getElementById("payment_method").value = result.paymentIntent.payment_method; // e.g. "pm_1KVlIGEfLuseb67nihcFtjvf"
                   document.getElementById("payment_intent").value = result.paymentIntent.id;
                   document.getElementById("payment_amount").value = result.paymentIntent.amount;
                   document.getElementById("payment_currency").value = result.paymentIntent.currency;
