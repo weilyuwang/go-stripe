@@ -12,6 +12,7 @@ func (app *application) routes() http.Handler {
 	if app.config.env == "development" {
 		mux.Use(middleware.Logger)
 	}
+	mux.Get("/", app.Home)
 	mux.Get("/virtual-terminal", app.VirtualTerminal)
 	mux.Get("/widget/{id}", app.ChargeOnce)
 	mux.Post("/payment-succeeded", app.PaymentSucceeded)
