@@ -21,7 +21,6 @@ CREATE TABLE `customers` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(60) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
@@ -69,7 +68,7 @@ CREATE TABLE `schema_migration` (
 
 LOCK TABLES `schema_migration` WRITE;
 /*!40000 ALTER TABLE `schema_migration` DISABLE KEYS */;
-INSERT INTO `schema_migration` VALUES ('20210630180628'),('20210630180635'),('20210630181022'),('20210630183342'),('20210630183733'),('20210630184028'),('20220220031419'),('20220222003656');
+INSERT INTO `schema_migration` VALUES ('20210630180628'),('20210630180635'),('20210630181022'),('20210630183342'),('20210630183733'),('20210630184028'),('20220220031419'),('20220222003656'),('20220222004034');
 /*!40000 ALTER TABLE `schema_migration` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `statuses`;
@@ -118,6 +117,8 @@ CREATE TABLE `transactions` (
   `transaction_status_id` int(11) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `expiry_month` int(11) NOT NULL DEFAULT 0,
+  `expiry_year` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `transactions_transaction_statuses_id_fk` (`transaction_status_id`),
   CONSTRAINT `transactions_transaction_statuses_id_fk` FOREIGN KEY (`transaction_status_id`) REFERENCES `transaction_statuses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -166,7 +167,7 @@ CREATE TABLE `widgets` (
 
 LOCK TABLES `widgets` WRITE;
 /*!40000 ALTER TABLE `widgets` DISABLE KEYS */;
-INSERT INTO `widgets` VALUES (1,'Widget','A very nice widget.',10,1000,'2022-02-19 03:58:57','2022-02-19 03:58:57','widget.png');
+INSERT INTO `widgets` VALUES (1,'Widget','A very nice widget.',10,1000,'2022-02-19 03:58:57','2022-02-19 03:58:57','');
 /*!40000 ALTER TABLE `widgets` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

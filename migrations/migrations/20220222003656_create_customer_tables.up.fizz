@@ -3,7 +3,6 @@ create_table("customers") {
   t.Column("first_name", "string", {"size": 255})
   t.Column("last_name", "string", {"size": 255})
   t.Column("email", "string", {})
-  t.Column("password", "string", {"size": 60})
 }
 
 sql("alter table customers alter column created_at set default now();")

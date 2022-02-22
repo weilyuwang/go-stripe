@@ -1,0 +1,2 @@
+drop_column("transactions", "expiry_month")
+drop_column("transactions", "expiry_year")
