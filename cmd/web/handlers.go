@@ -134,6 +134,7 @@ func (app *application) SaveCustomer(firstName, lastName, email string) (int, er
 	}
 	id, err := app.DB.InsertCustomer(customer)
 	if err != nil {
+		app.errorLog.Println(err)
 		return 0, err
 	}
 	return id, nil
@@ -143,6 +144,7 @@ func (app *application) SaveCustomer(firstName, lastName, email string) (int, er
 func (app *application) SaveTransaction(txn models.Transaction) (int, error) {
 	id, err := app.DB.InsertTransaction(txn)
 	if err != nil {
+		app.errorLog.Println(err)
 		return 0, err
 	}
 	return id, nil
@@ -152,6 +154,7 @@ func (app *application) SaveTransaction(txn models.Transaction) (int, error) {
 func (app *application) SaveOrder(order models.Order) (int, error) {
 	id, err := app.DB.InsertOrder(order)
 	if err != nil {
+		app.errorLog.Println(err)
 		return 0, err
 	}
 	return id, nil

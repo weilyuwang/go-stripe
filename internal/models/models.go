@@ -151,7 +151,7 @@ func (m *DBModel) InsertTransaction(txn Transaction) (int, error) {
 	)
 
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	id, err := result.LastInsertId()
@@ -184,7 +184,7 @@ func (m *DBModel) InsertOrder(order Order) (int, error) {
 	)
 
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	id, err := result.LastInsertId()
@@ -215,7 +215,7 @@ func (m *DBModel) InsertCustomer(c Customer) (int, error) {
 	)
 
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	id, err := result.LastInsertId()
