@@ -104,6 +104,8 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 
 	data := make(map[string]interface{})
 	data["email"] = email
+	data["first_name"] = firstName
+	data["last_name"] = lastName
 	data["pi"] = paymentIntent
 	data["pm"] = paymentMethod
 	data["pa"] = paymentAmount
