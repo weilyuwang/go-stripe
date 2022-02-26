@@ -74,6 +74,10 @@ func main() {
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+
+	if cfg.env == "development" {
+		infoLog.Println(fmt.Sprintf("Connected to DB @ %s", cfg.db.dsn))
+	}
 	defer conn.Close()
 
 	// set up session
