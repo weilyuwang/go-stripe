@@ -60,13 +60,9 @@ Virtual Terminal
 
 {{define "js"}}
   <script>
-    window.onload = () => {
-      document.getElementById("amount").value = document.getElementById("charge_amount").value;
-    }
-    let el = document.getElementById("charge_amount")
-    el.addEventListener("change", (event) => {
-      if(event.target.value !== "") {
-        document.getElementById("amount").value = event.target.value * 100;
+    document.getElementById("charge_amount").addEventListener("change", (e) => {
+      if(e.target.value !== "") {
+        document.getElementById("amount").value = parseInt(e.target.value * 100, 10);
       } else {
         document.getElementById("amount").value = 0;
       }
