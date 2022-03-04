@@ -25,6 +25,7 @@ func (app *application) VirtualTerminal(w http.ResponseWriter, r *http.Request) 
 type TransactionData struct {
 	FirstName       string
 	LastName        string
+	Name            string
 	Email           string
 	PaymentIntentID string
 	PaymentMethodID string
@@ -48,6 +49,7 @@ func (app *application) GetTransactionData(r *http.Request) (TransactionData, er
 	// read post data
 	firstName := r.Form.Get("first_name")
 	lastName := r.Form.Get("last_name")
+	name := r.Form.Get("cardholder_name")
 	email := r.Form.Get("email")
 	paymentIntent := r.Form.Get("payment_intent")
 	paymentMethod := r.Form.Get("payment_method")
@@ -80,6 +82,7 @@ func (app *application) GetTransactionData(r *http.Request) (TransactionData, er
 	txnData = TransactionData{
 		FirstName:       firstName,
 		LastName:        lastName,
+		Name:            name,
 		Email:           email,
 		PaymentIntentID: paymentIntent,
 		PaymentMethodID: paymentMethod,
