@@ -5,9 +5,227 @@
 {{end}}
 
 {{define "content"}}
-  <h2 class="mt-5">Bronze Plan</h2>
-  <hr>
+    {{$widget := index .Data "widget"}}
+    <h2 class="mt-3 text-center">Bronze Plan: {{formatCurrency $widget.Price}}</h2>
+    <hr>
 
+    <div class="alert alert-danger text-center d-none" id="card-messages"></div>
+    <form
+      action="/payment-succeeded-temp"
+      method="post"
+      name="charge_form"
+      id="charge_form"
+      class="d-block needs-validation charge-form"
+      autocomplete="off"
+      novalidate
+    >
+
+      <input type="hidden" name="product_id" value="{{$widget.ID}}">
+      <input type="hidden" name="amount" id="amount" value="{{$widget.Price}}">
+
+      <h3 class="mt-3 mb-3 text-center">{{formatCurrency $widget.Price}}/month</h3>
+      <p>{{$widget.Description}}</p>
+      <hr>
+
+      <div class="mb-3">
+        <label for="first-name" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="first-name" name="last_name" required autocomplete="first-name-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="last-name" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="last-name" name="last_name" required autocomplete="last-name-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="cardholder-email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="cardholder-email" name="email" required autocomplete="cardholder-email-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="cardholder-name" class="form-label">Name on Card</label>
+        <input type="text" class="form-control" id="cardholder-name" name="cardholder_name" required autocomplete="cardholder-name-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="card-element" class="form-label">Credit Card</label>
+        <div id="card-element" class="form-control"><!--Stripe.js injects the Card Element--></div>
+        <div class="alert-danger text-center" id="card-errors" role="alert"></div>
+        <div class="alert-success text-center" id="card-success" role="alert"></div>
+      </div>
+
+      <hr>
+
+      <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="val()">Pay {{formatCurrency $widget.Price}}/month</a>
+
+      <div id="processing-payment" class="text-center d-none">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <input type="hidden" name="payment_intent" id="payment_intent">
+      <input type="hidden" name="payment_method" id="payment_method">
+      <input type="hidden" name="payment_amount" id="payment_amount">
+      <input type="hidden" name="payment_currency" id="payment_currency">
+    </form>
 
 {{end}}
 
+{{define "js"}}
+    {{/*    variables are specific to a given block in Go template*/}}
+    {{$widget := index .Data "widget"}}
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <script>
+      let card;
+      let stripe;
+      const cardMessages = document.getElementById("card-messages")
+      const payButton = document.getElementById("pay-button")
+      const processing = document.getElementById("processing-payment")
+
+      // initialize stripe with public key
+      stripe = Stripe({{.StripePublishableKey}});
+
+      (function() {
+        // Stripe Elements are customizable UI components used to collect sensitive information in your payment forms.
+        const elements = stripe.elements();
+        const style = {
+          base: {
+            fontSize: '16px',
+            lineHeight: '24px',
+          }
+        };
+        // create card entry
+        card = elements.create('card', {
+          style: style,
+          hidePostalCode: true,
+        })
+        // Stripe injects an iframe into the DOM
+        card.mount('#card-element')
+
+        // check for input errors
+        card.addEventListener('change', function(event) {
+          let displayError = document.getElementById('card-errors')
+          if (event.error) {
+            displayError.classList.remove('d-none');
+            displayError.textContent = event.error.message;
+          } else {
+            displayError.classList.add('d-none');
+            displayError.textContent = '';
+          }
+        })
+      })();
+
+      function hidePayButton() {
+        payButton.classList.add('d-none');
+        processing.classList.remove('d-none');
+      }
+
+      function showPayButtons() {
+        payButton.classList.remove('d-none');
+        processing.classList.add('d-none');
+      }
+
+      function showCardError(msg) {
+        cardMessages.classList.add("alert-danger");
+        cardMessages.classList.remove("alert-success");
+        cardMessages.classList.remove("d-none");
+        cardMessages.innerText = msg
+      }
+
+      function showCardSuccess() {
+        cardMessages.classList.remove("alert-danger");
+        cardMessages.classList.add("alert-success");
+        cardMessages.classList.remove("d-none");
+        cardMessages.innerText = "Transaction successful";
+      }
+
+      function val() {
+        let form = document.getElementById("charge_form");
+        if (form.checkValidity() === false) {
+          this.event.preventDefault();
+          this.event.stopPropagation();
+          form.classList.add("was-validated");
+          return;
+        }
+        form.classList.add("was-validated");
+        hidePayButton();
+
+        let amountToCharge = document.getElementById("amount").value;
+
+        stripe.createPaymentMethod({
+          type: 'card',
+          card: card,
+          billing_details: {
+            email: document.getElementById("cardholder-email").value,
+          },
+        }).then(stripePaymentMethodHandler)
+      }
+
+      function stripePaymentMethodHandler(result) {
+        if(result.error) {
+          // card declined, or something went wrong with the card
+          showCardError(result.error.message);
+          showPayButtons();
+        } else {
+          // create a customer and subscribe to plan
+          let payload = {
+            plan: '{{$widget.PlanID}}',
+            payment_method: result.paymentMethod.id,
+            email: document.getElementById("cardholder-email").value,
+            last_four: result.paymentMethod.card.last4,
+          }
+
+          const requestOptions = {
+            method: 'post',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          }
+
+          fetch("{{.API}}/api/create-customer-and-subscribe-to-plan", requestOptions)
+            .then(response => response.json())
+            .then(response => {
+              try {
+                console.log(response);
+                // stripe.confirmCardPayment(response.client_secret, {
+                //   payment_method: {
+                //     card: card,
+                //     billing_details: {
+                //       name: document.getElementById("cardholder-name").value,
+                //     }
+                //   }
+                // }).then(function(result) {
+                //   if(result.error) {
+                //     // card declined, or something went wrong with the card
+                //     showCardError(result.error.message);
+                //     showPayButtons();
+                //   } else if(result.paymentIntent) {
+                //     if(result.paymentIntent.status === "succeeded") {
+                //       // we have charged the card
+                //       document.getElementById("payment_method").value = result.paymentIntent.payment_method; // e.g. "pm_1KVlIGEfLuseb67nihcFtjvf"
+                //       document.getElementById("payment_intent").value = result.paymentIntent.id;
+                //       document.getElementById("payment_amount").value = result.paymentIntent.amount;
+                //       document.getElementById("payment_currency").value = result.paymentIntent.currency;
+                //       processing.classList.add("d-none");
+                //       showCardSuccess();
+                //       // submit the form
+                //       document.getElementById("charge_form").submit();
+                //     }
+                //   }
+                // })
+              } catch (err) {
+                console.log(err)
+                showCardError("Invalid response from payment gateway!");
+                showPayButtons();
+              }
+            })
+        }
+      }
+
+    </script>
+{{end}}
