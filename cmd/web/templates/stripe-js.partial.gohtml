@@ -92,12 +92,10 @@
       }
 
       fetch("{{.API}}/api/payment-intent", requestOptions)
-        .then(response => response.text())
+        .then(response => response.json())
         .then(response => {
-          let data;
           try {
-            data = JSON.parse(response);
-            stripe.confirmCardPayment(data.client_secret, {
+            stripe.confirmCardPayment(response.client_secret, {
               payment_method: {
                 card: card,
                 billing_details: {
