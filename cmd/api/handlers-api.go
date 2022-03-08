@@ -18,8 +18,8 @@ type stripePayload struct {
 	Email         string `json:"email"`
 	CardBrand     string `json:"card_brand"`
 	LastFour      string `json:"last_four"`
-	ExpiryMonth   string `json:"exp_month"`
-	ExpiryYear    string `json:"exp_year"`
+	ExpiryMonth   int    `json:"exp_month"`
+	ExpiryYear    int    `json:"exp_year"`
 	ProductID     string `json:"product_id"`
 	FirstName     string `json:"first_name"`
 	LastName      string `json:"last_name"`
@@ -157,14 +157,12 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 
 		// Create a new DB transaction
 		amount, _ := strconv.Atoi(payload.Amount)
-		expiryMonth, _ := strconv.Atoi(payload.ExpiryMonth)
-		expiryYear, _ := strconv.Atoi(payload.ExpiryYear)
 		txn := models.Transaction{
 			Amount:              amount,
 			Currency:            "cad",
 			LastFour:            payload.LastFour,
-			ExpiryMonth:         expiryMonth,
-			ExpiryYear:          expiryYear,
+			ExpiryMonth:         payload.ExpiryMonth,
+			ExpiryYear:          payload.ExpiryYear,
 			TransactionStatusID: 2,
 		}
 
