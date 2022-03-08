@@ -1,0 +1,33 @@
+{{template "base" .}}
+
+{{define "title"}}
+  Payment Succeeded!
+{{end}}
+
+{{define "content"}}
+    <h2 class="mt-5">Payment Succeeded</h2>
+    <hr>
+    <p>Customer Name: <span id="first_name"></span> <span id="last_name"></span></p>
+    <p>Email: <span id="email"></span></p>
+    <p>Payment Amount: <span id="amount"></span></p>
+    <p>Last Four: <span id="last_four"></span></p>
+    <p>Expiry Date: <span id="exp_month"></span>/<span id="exp_year"></span></p>
+{{end}}
+
+
+{{define "js"}}
+    <script>
+        if(sessionStorage.first_name) {
+            document.getElementById("first_name").innerHTML = sessionStorage.first_name;
+            document.getElementById("last_name").innerHTML = sessionStorage.last_name;
+            document.getElementById("email").innerHTML = sessionStorage.email;
+            document.getElementById("amount").innerHTML = sessionStorage.amount;
+            document.getElementById("last_four").innerHTML = sessionStorage.last_four;
+            document.getElementById("exp_month").innerHTML = sessionStorage.exp_month;
+            document.getElementById("exp_year").innerHTML = sessionStorage.exp_year;
+
+            sessionStorage.clear();
+        }
+    </script>
+
+{{end}}
