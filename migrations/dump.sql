@@ -24,12 +24,12 @@ CREATE TABLE `customers` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (9,'','Trans','tman@test.com','2022-02-26 04:36:15','2022-02-26 04:36:15');
+INSERT INTO `customers` VALUES (9,'','Trans','tman@test.com','2022-02-26 04:36:15','2022-02-26 04:36:15'),(10,'','Bruce ','bwayne@example.com','2022-03-04 01:28:25','2022-03-04 01:28:25'),(11,'','Weil','wwang@gmail.com','2022-03-04 01:58:40','2022-03-04 01:58:40'),(12,'','Daniel','djane@exam.com','2022-03-04 02:25:40','2022-03-04 02:25:40'),(13,'','weilyuwang','sss@test.com','2022-03-04 02:29:03','2022-03-04 02:29:03');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `orders`;
@@ -54,12 +54,12 @@ CREATE TABLE `orders` (
   CONSTRAINT `orders_statuses_id_fk` FOREIGN KEY (`status_id`) REFERENCES `statuses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `orders_transactions_id_fk` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `orders_widgets_id_fk` FOREIGN KEY (`widget_id`) REFERENCES `widgets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (2,1,8,1,1,1000,'2022-02-26 04:36:15','2022-02-26 04:36:15',9);
+INSERT INTO `orders` VALUES (2,1,8,1,1,1000,'2022-02-26 04:36:15','2022-02-26 04:36:15',9),(3,1,9,1,1,1000,'2022-03-04 01:28:25','2022-03-04 01:28:25',10),(4,1,10,1,1,1000,'2022-03-04 01:58:40','2022-03-04 01:58:40',11),(5,1,11,1,1,1000,'2022-03-04 02:25:41','2022-03-04 02:25:41',12),(6,1,12,1,1,1000,'2022-03-04 02:29:03','2022-03-04 02:29:03',13);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `schema_migration`;
@@ -73,7 +73,7 @@ CREATE TABLE `schema_migration` (
 
 LOCK TABLES `schema_migration` WRITE;
 /*!40000 ALTER TABLE `schema_migration` DISABLE KEYS */;
-INSERT INTO `schema_migration` VALUES ('20210630180628'),('20210630180635'),('20210630181022'),('20210630183342'),('20210630183733'),('20210630184028'),('20220220031419'),('20220222003656'),('20220222004034'),('20220222005109'),('20220304011819');
+INSERT INTO `schema_migration` VALUES ('20210630180628'),('20210630180635'),('20210630181022'),('20210630183342'),('20210630183733'),('20210630184028'),('20220220031419'),('20220222003656'),('20220222004034'),('20220222005109'),('20220304011819'),('20220308033654');
 /*!40000 ALTER TABLE `schema_migration` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `statuses`;
@@ -129,12 +129,12 @@ CREATE TABLE `transactions` (
   PRIMARY KEY (`id`),
   KEY `transactions_transaction_statuses_id_fk` (`transaction_status_id`),
   CONSTRAINT `transactions_transaction_statuses_id_fk` FOREIGN KEY (`transaction_status_id`) REFERENCES `transaction_statuses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (8,1000,'cad','4242','ch_3KXI0uEfLuseb67n1ecak8Sn',2,'2022-02-26 04:36:15','2022-02-26 04:36:15',12,2024,'','');
+INSERT INTO `transactions` VALUES (8,1000,'cad','4242','ch_3KXI0uEfLuseb67n1ecak8Sn',2,'2022-02-26 04:36:15','2022-02-26 04:36:15',12,2024,'',''),(9,1000,'cad','4242','ch_3KZPwQEfLuseb67n1q83C9mo',2,'2022-03-04 01:28:25','2022-03-04 01:28:25',12,2023,'pi_3KZPwQEfLuseb67n1jS9h1DG','pm_1KZPwREfLuseb67nh24gHwQ1'),(10,1000,'cad','4242','ch_3KZQPhEfLuseb67n1Uix7OQ7',2,'2022-03-04 01:58:40','2022-03-04 01:58:40',12,2023,'pi_3KZQPhEfLuseb67n1mOz4W0Q','pm_1KZQPiEfLuseb67nQSCN3hj6'),(11,1000,'cad','4242','ch_3KZQpqEfLuseb67n1X7a4RRx',2,'2022-03-04 02:25:41','2022-03-04 02:25:41',12,2023,'pi_3KZQpqEfLuseb67n1IBXJhaG','pm_1KZQpqEfLuseb67nXL45ptRR'),(12,1000,'cad','4242','ch_3KZQt6EfLuseb67n0no8fgR9',2,'2022-03-04 02:29:03','2022-03-04 02:29:03',2,2031,'pi_3KZQt6EfLuseb67n00x6v7np','pm_1KZQt7EfLuseb67n2kdgRPOe'),(13,3245,'cad','4242','ch_3KZRAHEfLuseb67n1NK93CzE',2,'2022-03-04 02:46:48','2022-03-04 02:46:48',12,2023,'pi_3KZRAHEfLuseb67n1sMcSTgA','pm_1KZRAIEfLuseb67nVzwtOIGL'),(14,5000,'cad','4242','ch_3KZRE8EfLuseb67n1BKIx2Dr',2,'2022-03-04 02:50:47','2022-03-04 02:50:47',3,2042,'pi_3KZRE8EfLuseb67n197IZf4I','pm_1KZRE9EfLuseb67nWcmAqgu7'),(15,3245,'cad','4242','ch_3KZRGnEfLuseb67n05DhbCWL',2,'2022-03-04 02:53:32','2022-03-04 02:53:32',4,2024,'pi_3KZRGnEfLuseb67n0VBh60q4','pm_1KZRGoEfLuseb67ncS9XOEKe');
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `users`;
@@ -169,13 +169,15 @@ CREATE TABLE `widgets` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `image` varchar(255) NOT NULL DEFAULT '',
+  `is_recurring` tinyint(1) NOT NULL DEFAULT 0,
+  `plan_id` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `widgets` WRITE;
 /*!40000 ALTER TABLE `widgets` DISABLE KEYS */;
-INSERT INTO `widgets` VALUES (1,'Widget','A very nice widget.',10,1000,'2022-02-19 03:58:57','2022-02-19 03:58:57','widget.png');
+INSERT INTO `widgets` VALUES (1,'Widget','A very nice widget.',10,1000,'2022-02-19 03:58:57','2022-02-19 03:58:57','widget.png',0,''),(2,'Bronze Plan','Get three widgets for the price of two every month',10000000,2000,'2022-03-07 22:35:55','2022-03-07 22:35:57','',0,'');
 /*!40000 ALTER TABLE `widgets` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
