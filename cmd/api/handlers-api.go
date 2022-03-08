@@ -9,8 +9,12 @@ import (
 )
 
 type stripePayload struct {
-	Currency string `json:"currency"`
-	Amount   string `json:"amount"`
+	Currency      string `json:"currency"`
+	Amount        string `json:"amount"`
+	Plan          string `json:"plan"`
+	PaymentMethod string `json:"payment_method"`
+	Email         string `json:"email"`
+	LastFour      string `json:"last_four"`
 }
 
 type jsonResponse struct {
@@ -86,6 +90,50 @@ func (app *application) GetWidgetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	out, err := json.MarshalIndent(widget, "", "	")
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
+}
+
+func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, r *http.Request) {
+	var payload stripePayload
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	card := cards.Card{
+		Secret:   app.config.stripe.secret,
+		Key:      app.config.stripe.key,
+		Currency: payload.Currency,
+	}
+
+	stripeCustomer, msg, err := card.CreateCustomer(payload.PaymentMethod, payload.Email)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	subscriptionID, err := card.SubscribeToPlan(stripeCustomer, payload.Plan, payload.Email, payload.LastFour, "")
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	app.infoLog.Println("subscription ID is", subscriptionID)
+
+	resp := jsonResponse{
+		OK:      true,
+		Message: msg,
+	}
+
+	out, err := json.MarshalIndent(resp, "", "	")
 	if err != nil {
 		app.errorLog.Println(err)
 		return

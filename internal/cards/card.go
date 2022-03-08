@@ -72,13 +72,14 @@ func (c *Card) createPaymentIntent(currency string, amount int) (*stripe.Payment
 }
 
 func (c *Card) SubscribeToPlan(sc *stripe.Customer, plan, email, last4, cardType string) (string, error) {
-	items := []*stripe.SubscriptionItemsParams{
-		{Plan: stripe.String(plan)},
-	}
 
 	params := &stripe.SubscriptionParams{
 		Customer: stripe.String(sc.ID),
-		Items:    items,
+		Items: []*stripe.SubscriptionItemsParams{
+			{
+				Plan: stripe.String(plan),
+			},
+		},
 	}
 
 	params.AddMetadata("last_four", last4)
