@@ -60,6 +60,8 @@ Virtual Terminal
 
 {{define "js"}}
   <script>
+    checkAuth();
+
     document.getElementById("charge_amount").addEventListener("change", (e) => {
       if(e.target.value !== "") {
         document.getElementById("amount").value = parseInt(e.target.value * 100, 10);
