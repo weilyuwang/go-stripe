@@ -5,6 +5,7 @@
 {{end}}
 
 {{define "content"}}
+  <div class="alert alert-danger text-center d-none" id="login-messages"></div>
   <form
     action=""
     method="post"
@@ -31,6 +32,21 @@
 
 {{define "js"}}
   <script>
+  let loginMessages = document.getElementById("login-messages")
+  function showError(msg) {
+    loginMessages.classList.add("alert-danger");
+    loginMessages.classList.remove("alert-success");
+    loginMessages.classList.remove("d-none");
+    loginMessages.innerText = msg
+  }
+
+  function showSuccess() {
+    loginMessages.classList.remove("alert-danger");
+    loginMessages.classList.add("alert-success");
+    loginMessages.classList.remove("d-none");
+    loginMessages.innerText = "Login successful";
+  }
+
   function val() {
     let form = document.getElementById("login_form");
     if (form.checkValidity() === false) {
@@ -59,6 +75,13 @@
       .then(response => response.json())
       .then(response => {
         console.log(response);
+        if(response.error) {
+          showError(response.message);
+        } else {
+          localStorage.setItem("token", response.authentication_token.token)
+          localStorage.setItem("token_expiry", response.authentication_token.expiry)
+          showSuccess();
+        }
       });
   }
   </script>
