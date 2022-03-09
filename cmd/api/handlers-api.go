@@ -258,7 +258,5 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 	payload.Error = false
 	payload.Message = "Success!"
 
-	out, _ := json.MarshalIndent(payload, "", "\t")
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(out)
+	_ = app.writeJSON(w, http.StatusOK, payload)
 }
