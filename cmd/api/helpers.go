@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"io"
 	"net/http"
 )
@@ -78,4 +79,34 @@ func (app *application) invalidCredentials(w http.ResponseWriter) error {
 		return err
 	}
 	return nil
+}
+
+func (app *application) internalError(w http.ResponseWriter) error {
+	var payload struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Error = true
+	payload.Message = "something went wrong"
+
+	err := app.writeJSON(w, http.StatusInternalServerError, payload)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (app *application) passwordMatches(hash, password string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		switch {
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			return false, nil
+		default:
+			return false, err
+		}
+	}
+
+	return true, nil
 }
