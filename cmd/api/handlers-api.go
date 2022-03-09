@@ -247,9 +247,23 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 
 	err := app.readJSON(w, r, &userInput)
 	if err != nil {
-		app.badRequest(w, r, err)
+		app.badRequest(w, err)
 		return
 	}
+
+	// get the user from the database by email; send error if invalid email
+	user, err := app.DB.GetUserByEmail(userInput.Email)
+	if err != nil {
+		app.invalidCredentials(w)
+		return
+	}
+	app.infoLog.Println(user)
+
+	// validate the password; send error if invalid password
+
+	// generate the token
+
+	// send response
 
 	var payload struct {
 		Error   bool   `json:"error"`
