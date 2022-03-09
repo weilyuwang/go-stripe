@@ -94,7 +94,7 @@ func (m *DBModel) GetUserForToken(token string) (*User, error) {
 			t.token_hash = ?
 	`
 
-	err := m.DB.QueryRowContext(ctx, query, tokenHash).Scan(
+	err := m.DB.QueryRowContext(ctx, query, tokenHash[:]).Scan(
 		&user.ID,
 		&user.FirstName,
 		&user.LastName,
