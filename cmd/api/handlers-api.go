@@ -257,7 +257,6 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 		app.invalidCredentials(w)
 		return
 	}
-	app.infoLog.Println(user)
 
 	// validate the password; send error if invalid password
 	validPassword, err := app.passwordMatches(user.Password, userInput.Password)

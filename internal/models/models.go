@@ -260,6 +260,7 @@ func (m *DBModel) GetUserByEmail(email string) (User, error) {
 
 	row := m.DB.QueryRowContext(ctx, stmt, email)
 
+	// the *Row's Scan will return ErrNoRows.
 	err := row.Scan(
 		&u.ID,
 		&u.FirstName,
