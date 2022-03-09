@@ -8,8 +8,8 @@
   <form
     action=""
     method="post"
-    name="charge_form"
-    id="charge_form"
+    name="login_form"
+    id="login_form"
     class="d-block needs-validation charge-form"
     autocomplete="off"
     novalidate
@@ -32,7 +32,34 @@
 {{define "js"}}
   <script>
   function val() {
+    let form = document.getElementById("login_form");
+    if (form.checkValidity() === false) {
+      this.event.preventDefault();
+      this.event.stopPropagation();
+      form.classList.add("was-validated");
+      return;
+    }
+    form.classList.add("was-validated");
 
+    let payload = {
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+    }
+
+    const requestOptions = {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    }
+
+    fetch("{{.API}}/api/authenticate", requestOptions)
+      .then(response => response.json())
+      .then(response => {
+        console.log(response);
+      })
   }
   </script>
 {{end}}
