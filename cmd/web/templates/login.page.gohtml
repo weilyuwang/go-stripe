@@ -81,6 +81,7 @@
           localStorage.setItem("token", response.authentication_token.token)
           localStorage.setItem("token_expiry", response.authentication_token.expiry)
           showSuccess();
+          location.href = "/";
         }
       });
   }
