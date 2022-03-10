@@ -38,7 +38,7 @@
             </li>
 
             <li id="vt-link" class="nav-item d-none">
-              <a class="nav-link" href="/virtual-terminal">Virtual Terminal</a>
+              <a class="nav-link" href="/admin/virtual-terminal">Virtual Terminal</a>
             </li>
           </ul>
 
@@ -78,7 +78,7 @@
       function logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('token_expiry');
-        location.href = "/login";
+        location.href = "/logout";
       }
 
       function checkAuth() {

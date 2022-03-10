@@ -5,29 +5,33 @@
 {{end}}
 
 {{define "content"}}
-  <div class="alert alert-danger text-center d-none" id="login-messages"></div>
-  <form
-    action=""
-    method="post"
-    name="login_form"
-    id="login_form"
-    class="d-block needs-validation charge-form"
-    autocomplete="off"
-    novalidate
-  >
-    <h3 class="mt-3 mb-3 text-center">Login</h3>
-    <hr>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" name="email" required autocomplete="email-new">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="alert alert-danger text-center d-none" id="login-messages"></div>
+      <form
+        action="/login "
+        method="post"
+        name="login_form"
+        id="login_form"
+        class="d-block needs-validation charge-form"
+        autocomplete="off"
+        novalidate
+      >
+        <h3 class="mt-3 mb-3 text-center">Login</h3>
+        <hr>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required autocomplete="email-new">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required autocomplete="password-new">
+        </div>
+        <hr>
+        <a href="javascript:void(0)" class="btn btn-primary" onclick="val()">Login</a>
+      </form>
     </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" name="password" required autocomplete="password-new">
-    </div>
-    <hr>
-    <a href="javascript:void(0)" class="btn btn-primary" onclick="val()">Login</a>
-  </form>
+  </div>
 {{end}}
 
 {{define "js"}}
@@ -77,10 +81,12 @@
         if(response.error) {
           showError(response.message);
         } else {
+          // save auth token to localStorage
           localStorage.setItem("token", response.authentication_token.token)
           localStorage.setItem("token_expiry", response.authentication_token.expiry)
           showSuccess();
-          location.href = "/";
+          // submit the form: POST /login to save userID to in-memory session
+          document.getElementById('login_form').submit();
         }
       });
   }

@@ -5,6 +5,8 @@
 {{end}}
 
 {{define "content"}}
+      <div class="row">
+    <div class="col-md-6 offset-md-3">
     {{$widget := index .Data "widget"}}
     <h2 class="mt-3 text-center">Bronze Plan: {{formatCurrency $widget.Price}}</h2>
     <hr>
@@ -69,7 +71,8 @@
       <input type="hidden" name="payment_amount" id="payment_amount">
       <input type="hidden" name="payment_currency" id="payment_currency">
     </form>
-
+</div>
+      </div>
 {{end}}
 
 {{define "js"}}
