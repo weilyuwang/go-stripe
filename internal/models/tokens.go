@@ -56,8 +56,8 @@ func (m *DBModel) InsertToken(t *Token, u User) error {
 	// insert new token
 	stmt = `
 		insert into tokens 
-			(user_id, name, email, token_hash, created_at, updated_at)
-		values (?, ?, ?, ?, ?, ?)
+			(user_id, name, email, token_hash, expiry, created_at, updated_at)
+		values (?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err = m.DB.ExecContext(ctx, stmt,
@@ -65,6 +65,7 @@ func (m *DBModel) InsertToken(t *Token, u User) error {
 		u.LastName,
 		u.Email,
 		t.Hash, // always store the token hash to DB, not the plain token (like password)
+		t.Expiry,
 		time.Now(),
 		time.Now(),
 	)
