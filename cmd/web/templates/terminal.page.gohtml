@@ -181,7 +181,6 @@ Virtual Terminal
       fetch("{{.API}}/api/admin/virtual-terminal-succeeded", requestOptions)
         .then(response => response.json())
         .then(function (data) {
-          console.log(data);
           showPayButtons();
           showCardSuccess();
           document.getElementById("bank-return-code").innerHTML = data.bank_return_code;
@@ -237,8 +236,7 @@ Virtual Terminal
                   // we have charged the card
                   processing.classList.add("d-none");
                   showCardSuccess();
-
-                  console.log(result);
+                  // call backend API to save the transaction data to DB
                   saveTransaction(result);
                 }
               }
