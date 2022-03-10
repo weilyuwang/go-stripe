@@ -15,3 +15,12 @@ func SessionLoad(next http.Handler) http.Handler {
 	// but all session data will be lost when your application is stopped or restarted.
 	return sessionManager.LoadAndSave(next)
 }
+
+func (app *application) Auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !app.Session.Exists(r.Context(), "userID") {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
