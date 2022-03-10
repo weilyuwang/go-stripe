@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"flag"
 	"fmt"
+	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/weilyuwang/go-stripe/internal/driver"
 	"github.com/weilyuwang/go-stripe/internal/models"
@@ -84,10 +85,11 @@ func main() {
 	}
 	defer conn.Close()
 
-	// set up session
 	// Initialize a new session manager and configure the session lifetime.
 	sessionManager = scs.New()
 	sessionManager.Lifetime = 24 * time.Hour
+	// set up MySQL based session
+	sessionManager.Store = mysqlstore.New(conn)
 
 	// template cache
 	tc := make(map[string]*template.Template)

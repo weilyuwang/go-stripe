@@ -85,7 +85,7 @@
           localStorage.setItem("token", response.authentication_token.token)
           localStorage.setItem("token_expiry", response.authentication_token.expiry)
           showSuccess();
-          // submit the form: POST /login to save userID to in-memory session
+          // submit the form: POST /login to save userID to session
           document.getElementById('login_form').submit();
         }
       });

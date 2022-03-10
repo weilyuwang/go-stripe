@@ -11,3 +11,5 @@ require (
 )
 
 require golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70
+
+require github.com/alexedwards/scs/mysqlstore v0.0.0-20220216073957-c252878bcf5a // indirect
