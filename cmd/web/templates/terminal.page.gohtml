@@ -5,57 +5,76 @@ Virtual Terminal
 {{end}}
 
 {{define "content"}}
-<h2 class="mt-5 mb-3 text-center">Virtual Terminal</h2>
-<hr>
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h2 class="mt-5 mb-3 text-center">Virtual Terminal</h2>
+    <hr>
 
-<div class="alert alert-danger text-center d-none" id="card-messages"></div>
-<form
-  action="/virtual-terminal-payment-succeeded"
-  method="post"
-  name="charge_form"
-  id="charge_form"
-  class="d-block needs-validation charge-form"
-  autocomplete="off"
-  novalidate
->
-  <div class="mb-3">
-    <label for="charge_amount" class="form-label">Amount</label>
-    <input type="text" class="form-control" id="charge_amount" name="charge_amount" required autocomplete="charge_amount-new">
+    <div class="alert alert-danger text-center d-none" id="card-messages"></div>
+    <form
+      action="/virtual-terminal-payment-succeeded"
+      method="post"
+      name="charge_form"
+      id="charge_form"
+      class="d-block needs-validation charge-form"
+      autocomplete="off"
+      novalidate
+    >
+      <div class="mb-3">
+        <label for="charge_amount" class="form-label">Amount</label>
+        <input type="text" class="form-control" id="charge_amount" name="charge_amount" required autocomplete="charge_amount-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="cardholder-name" class="form-label">Cardholder Name</label>
+        <input type="text" class="form-control" id="cardholder-name" name="cardholder_name" required autocomplete="cardholder-name-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="cardholder-email" class="form-label">Cardholder Email</label>
+        <input type="email" class="form-control" id="cardholder-email" name="email" required autocomplete="cardholder-email-new">
+      </div>
+
+      <div class="mb-3">
+        <label for="card-element" class="form-label">Credit Card</label>
+        <div id="card-element" class="form-control"><!--Stripe.js injects the Card Element--></div>
+        <div class="alert-danger text-center" id="card-errors" role="alert"></div>
+        <div class="alert-success text-center" id="card-success" role="alert"></div>
+      </div>
+
+      <hr>
+
+      <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="val()">Charge Card</a>
+
+      <div id="processing-payment" class="text-center d-none">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <input type="hidden" name="amount" id="amount">
+      <input type="hidden" name="payment_intent" id="payment_intent">
+      <input type="hidden" name="payment_method" id="payment_method">
+      <input type="hidden" name="payment_amount" id="payment_amount">
+      <input type="hidden" name="payment_currency" id="payment_currency">
+    </form>
   </div>
+</div>
 
-  <div class="mb-3">
-    <label for="cardholder-name" class="form-label">Cardholder Name</label>
-    <input type="text" class="form-control" id="cardholder-name" name="cardholder_name" required autocomplete="cardholder-name-new">
+<div class="row">
+  <div class="col-md-6 offset-md-3 d-none" id="receipt">
+    <h3 class="mt-3 text-center">Receipt</h3>
+    <hr>
+    <p>
+      <strong>Bank Return Code</strong>: <span id="bank-return-code"></span>
+    </p>
+    <p>
+      <a class="btn btn-primary" href="/virtual-terminal">
+        Charge another card
+      </a>
+    </p>
   </div>
-
-  <div class="mb-3">
-    <label for="cardholder-email" class="form-label">Cardholder Email</label>
-    <input type="email" class="form-control" id="cardholder-email" name="email" required autocomplete="cardholder-email-new">
-  </div>
-
-  <div class="mb-3">
-    <label for="card-element" class="form-label">Credit Card</label>
-    <div id="card-element" class="form-control"><!--Stripe.js injects the Card Element--></div>
-    <div class="alert-danger text-center" id="card-errors" role="alert"></div>
-    <div class="alert-success text-center" id="card-success" role="alert"></div>
-  </div>
-
-  <hr>
-
-  <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="val()">Charge Card</a>
-
-  <div id="processing-payment" class="text-center d-none">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-
-  <input type="hidden" name="amount" id="amount">
-  <input type="hidden" name="payment_intent" id="payment_intent">
-  <input type="hidden" name="payment_method" id="payment_method">
-  <input type="hidden" name="payment_amount" id="payment_amount">
-  <input type="hidden" name="payment_currency" id="payment_currency">
-</form>
+</div>
 {{end}}
 
 {{define "js"}}
@@ -70,5 +89,165 @@ Virtual Terminal
       }
     });
   </script>
- {{template "stripe-js" .}}
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    let card;
+    let stripe;
+    const cardMessages = document.getElementById("card-messages")
+    const payButton = document.getElementById("pay-button")
+    const processing = document.getElementById("processing-payment")
+
+    // initialize stripe with public key
+    stripe = Stripe({{.StripePublishableKey}});
+
+    (function() {
+      // Stripe Elements are customizable UI components used to collect sensitive information in your payment forms.
+      const elements = stripe.elements();
+      const style = {
+        base: {
+          fontSize: '16px',
+          lineHeight: '24px',
+        }
+      };
+      // create card entry
+      card = elements.create('card', {
+        style: style,
+        hidePostalCode: true,
+      })
+      // Stripe injects an iframe into the DOM
+      card.mount('#card-element')
+
+      // check for input errors
+      card.addEventListener('change', function(event) {
+        let displayError = document.getElementById('card-errors')
+        if (event.error) {
+          displayError.classList.remove('d-none');
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.classList.add('d-none');
+          displayError.textContent = '';
+        }
+      })
+    })();
+
+    function hidePayButton() {
+      payButton.classList.add('d-none');
+      processing.classList.remove('d-none');
+    }
+
+    function showPayButtons() {
+      payButton.classList.remove('d-none');
+      processing.classList.add('d-none');
+    }
+
+    function showCardError(msg) {
+      cardMessages.classList.add("alert-danger");
+      cardMessages.classList.remove("alert-success");
+      cardMessages.classList.remove("d-none");
+      cardMessages.innerText = msg
+    }
+
+    function showCardSuccess() {
+      cardMessages.classList.remove("alert-danger");
+      cardMessages.classList.add("alert-success");
+      cardMessages.classList.remove("d-none");
+      cardMessages.innerText = "Transaction successful";
+    }
+
+    function saveTransaction(result) {
+      let payload = {
+        payment_amount: parseInt(document.getElementById('amount').value, 10),
+        currency: result.paymentIntent.currency,
+        first_name: "",
+        last_name: "",
+        email: document.getElementById("cardholder-email").value,
+        payment_intent: result.paymentIntent.id,
+        payment_method: result.paymentIntent.payment_method,
+      }
+
+      let token = localStorage.getItem("token");
+
+      const requestOptions = {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify(payload),
+      }
+
+      fetch("{{.API}}/api/admin/virtual-terminal-succeeded", requestOptions)
+        .then(response => response.json())
+        .then(function (data) {
+          console.log(data);
+          showPayButtons();
+          showCardSuccess();
+          document.getElementById("bank-return-code").innerHTML = data.bank_return_code;
+          document.getElementById("receipt").classList.remove("d-none");
+        });
+    }
+
+    function val() {
+      let form = document.getElementById("charge_form");
+      if (form.checkValidity() === false) {
+        this.event.preventDefault();
+        this.event.stopPropagation();
+        form.classList.add("was-validated");
+        return;
+      }
+      form.classList.add("was-validated");
+      hidePayButton();
+
+      let amountToCharge = document.getElementById("amount").value;
+
+      let payload = {
+        amount: amountToCharge,
+        currency: 'cad',
+      }
+
+      const requestOptions = {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+
+      fetch("{{.API}}/api/payment-intent", requestOptions)
+        .then(response => response.json())
+        .then(response => {
+          try {
+            stripe.confirmCardPayment(response.client_secret, {
+              payment_method: {
+                card: card,
+                billing_details: {
+                  name: document.getElementById("cardholder-name").value,
+                }
+              }
+            }).then(function(result) {
+              if(result.error) {
+                // card declined, or something went wrong with the card
+                showCardError(result.error.message);
+                showPayButtons();
+              } else if(result.paymentIntent) {
+                if(result.paymentIntent.status === "succeeded") {
+                  // we have charged the card
+                  processing.classList.add("d-none");
+                  showCardSuccess();
+
+                  console.log(result);
+                  saveTransaction(result);
+                }
+              }
+            })
+          } catch (err) {
+            showCardError("Invalid response from payment gateway!");
+            showPayButtons();
+          }
+        })
+    }
+  </script>
 {{end}}
