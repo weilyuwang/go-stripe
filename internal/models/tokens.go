@@ -92,10 +92,10 @@ func (m *DBModel) GetUserForToken(token string) (*User, error) {
 			users u
 			inner join tokens t on (u.id = t.user_id)
 		where
-			t.token_hash = ?
+			t.token_hash = ? and t.expiry > ?
 	`
 
-	err := m.DB.QueryRowContext(ctx, query, tokenHash[:]).Scan(
+	err := m.DB.QueryRowContext(ctx, query, tokenHash[:], time.Now()).Scan(
 		&user.ID,
 		&user.FirstName,
 		&user.LastName,
