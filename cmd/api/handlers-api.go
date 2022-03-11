@@ -9,6 +9,7 @@ import (
 	"github.com/weilyuwang/go-stripe/internal/cards"
 	"github.com/weilyuwang/go-stripe/internal/models"
 	"github.com/weilyuwang/go-stripe/internal/urlsigner"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -35,6 +36,70 @@ type jsonResponse struct {
 	Message string `json:"message,omitempty"`
 	Content string `json:"content,omitempty"`
 	ID      int    `json:"id,omitempty"`
+}
+
+func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r *http.Request) {
+	var txnData struct {
+		PaymentAmount   int    `json:"payment_amount"`
+		PaymentCurrency string `json:"currency"`
+		FirstName       string `json:"first_name"`
+		LastName        string `json:"last_name"`
+		Email           string `json:"email"`
+		PaymentIntent   string `json:"payment_intent"`
+		PaymentMethod   string `json:"payment_method"`
+		BankReturnCode  string `json:"bank_return_code"`
+		ExpiryMonth     int    `json:"expiry_month"`
+		ExpiryYear      int    `json:"expiry_year"`
+		LastFour        string `json:"last_four"`
+	}
+
+	err := app.readJSON(w, r, &txnData)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	card := cards.Card{
+		Secret: app.config.stripe.secret,
+		Key:    app.config.stripe.key,
+	}
+
+	pi, err := card.RetrievePaymentIntent(txnData.PaymentIntent)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	pm, err := card.GetPaymentMethod(txnData.PaymentMethod)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	txnData.LastFour = pm.Card.Last4
+	txnData.ExpiryMonth = int(pm.Card.ExpMonth)
+	txnData.ExpiryYear = int(pm.Card.ExpYear)
+	txnData.BankReturnCode = pi.Charges.Data[0].ID
+
+	txn := models.Transaction{
+		Amount:              txnData.PaymentAmount,
+		Currency:            txnData.PaymentCurrency,
+		LastFour:            txnData.LastFour,
+		ExpiryMonth:         txnData.ExpiryMonth,
+		ExpiryYear:          txnData.ExpiryYear,
+		PaymentIntent:       txnData.PaymentIntent,
+		PaymentMethod:       txnData.PaymentMethod,
+		BankReturnCode:      txnData.BankReturnCode,
+		TransactionStatusID: 2,
+	}
+
+	_, err = app.SaveTransaction(txn)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, txn)
 }
 
 func (app *application) GetPaymentIntent(w http.ResponseWriter, r *http.Request) {
@@ -406,66 +471,43 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 	app.writeJSON(w, http.StatusCreated, resp)
 }
 
-func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r *http.Request) {
-	var txnData struct {
-		PaymentAmount   int    `json:"payment_amount"`
-		PaymentCurrency string `json:"currency"`
-		FirstName       string `json:"first_name"`
-		LastName        string `json:"last_name"`
-		Email           string `json:"email"`
-		PaymentIntent   string `json:"payment_intent"`
-		PaymentMethod   string `json:"payment_method"`
-		BankReturnCode  string `json:"bank_return_code"`
-		ExpiryMonth     int    `json:"expiry_month"`
-		ExpiryYear      int    `json:"expiry_year"`
-		LastFour        string `json:"last_four"`
+func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var payload struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
-	err := app.readJSON(w, r, &txnData)
+	err := app.readJSON(w, r, &payload)
 	if err != nil {
 		app.badRequest(w, err)
 		return
 	}
 
-	card := cards.Card{
-		Secret: app.config.stripe.secret,
-		Key:    app.config.stripe.key,
-	}
-
-	pi, err := card.RetrievePaymentIntent(txnData.PaymentIntent)
+	user, err := app.DB.GetUserByEmail(payload.Email)
 	if err != nil {
 		app.badRequest(w, err)
 		return
 	}
 
-	pm, err := card.GetPaymentMethod(txnData.PaymentMethod)
+	newHash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 12)
 	if err != nil {
 		app.badRequest(w, err)
 		return
 	}
 
-	txnData.LastFour = pm.Card.Last4
-	txnData.ExpiryMonth = int(pm.Card.ExpMonth)
-	txnData.ExpiryYear = int(pm.Card.ExpYear)
-	txnData.BankReturnCode = pi.Charges.Data[0].ID
-
-	txn := models.Transaction{
-		Amount:              txnData.PaymentAmount,
-		Currency:            txnData.PaymentCurrency,
-		LastFour:            txnData.LastFour,
-		ExpiryMonth:         txnData.ExpiryMonth,
-		ExpiryYear:          txnData.ExpiryYear,
-		PaymentIntent:       txnData.PaymentIntent,
-		PaymentMethod:       txnData.PaymentMethod,
-		BankReturnCode:      txnData.BankReturnCode,
-		TransactionStatusID: 2,
-	}
-
-	_, err = app.SaveTransaction(txn)
+	err = app.DB.UpdatePasswordForUser(user, string(newHash))
 	if err != nil {
 		app.badRequest(w, err)
 		return
 	}
 
-	_ = app.writeJSON(w, http.StatusOK, txn)
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+	resp.Error = false
+	resp.Message = "password changed"
+
+	app.writeJSON(w, http.StatusCreated, resp)
+
 }
