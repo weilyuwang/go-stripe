@@ -345,7 +345,7 @@ func (app *application) CheckAuthentication(w http.ResponseWriter, r *http.Reque
 
 func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
-		Email bool `json:"email"`
+		Email string `json:"email"`
 	}
 
 	err := app.readJSON(w, r, &payload)
@@ -361,7 +361,21 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 	data.Link = "http://www.unb.ca"
 
 	// send email
+	err = app.SendMail("info@widgets.com", payload.Email, "Password Reset Request", "password-reset", data)
+	if err != nil {
+		app.errorLog.Println(err)
+		app.badRequest(w, err)
+		return
+	}
 
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	resp.Error = false
+
+	app.writeJSON(w, http.StatusCreated, resp)
 }
 
 func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r *http.Request) {
