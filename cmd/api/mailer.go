@@ -73,7 +73,5 @@ func (app *application) SendMail(from, to, subject, tmpl string, data interface{
 		return err
 	}
 
-	app.infoLog.Println("send mail")
-
 	return nil
 }
