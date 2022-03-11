@@ -343,6 +343,27 @@ func (app *application) CheckAuthentication(w http.ResponseWriter, r *http.Reque
 	app.writeJSON(w, http.StatusOK, payload)
 }
 
+func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Request) {
+	var payload struct {
+		Email bool `json:"email"`
+	}
+
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	var data struct {
+		Link string `json:"link"`
+	}
+
+	data.Link = "http://www.unb.ca"
+
+	// send email
+
+}
+
 func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r *http.Request) {
 	var txnData struct {
 		PaymentAmount   int    `json:"payment_amount"`

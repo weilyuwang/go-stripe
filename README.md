@@ -34,4 +34,5 @@ docker exec -i [CONTAINER_NAME] mysqldump -uroot -p[ROOT_PASSWORD] --databases [
 #### [Go Stripe SDK](https://github.com/stripe/stripe-go)
 #### [SCS Session Manager](https://github.com/alexedwards/scs)
 #### [MySQL based session store for SCS](https://github.com/alexedwards/scs/tree/master/mysqlstore)
-#### [chi](https://github.com/go-chi/chi)
+#### [SMTP Client for sending email](https://github.com/xhit/go-simple-mail)
+#### [chi: HTTP router](https://github.com/go-chi/chi)
