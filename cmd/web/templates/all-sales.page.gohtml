@@ -8,10 +8,75 @@
   <h2 class="mt-5">All Sales</h2>
   <hr>
 
+    <table id="sales-table" class="table table-striped">
+      <thead>
+      <tr>
+        <th>Transaction</th>
+        <th>Customer</th>
+        <th>Product</th>
+        <th>Amount</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+
+    </table>
+
 {{end}}
 
 {{define "js"}}
   <script>
+    let token = localStorage.getItem("token")
+    let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0]
 
+    const requestOptions = {
+      method: "get",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      }
+    }
+
+    fetch("{{.API}}/api/admin/all-sales", requestOptions)
+    .then(response => response.json())
+    .then((orders) => {
+      console.log(orders);
+      if(orders) {
+        orders.forEach(o => {
+          let newRow = tbody.insertRow();
+
+          let newCeil = newRow.insertCell();
+          newCeil.innerHTML = `<a href="/admin/sales/${o.id}">Order ${o.id}</a>`
+
+          newCeil = newRow.insertCell();
+          let item = document.createTextNode(o.customer.last_name + ", " + o.customer.first_name);
+          newCeil.appendChild(item)
+
+          newCeil = newRow.insertCell();
+          item = document.createTextNode(o.widget.name);
+          newCeil.appendChild(item)
+
+          let currency = formatCurrency(o.transaction.amount);
+          newCeil = newRow.insertCell();
+          item = document.createTextNode(currency);
+          newCeil.appendChild(item)
+        })
+      } else {
+        let newRow = tbody.insertRow();
+        let newCeil = newRow.insertCell();
+        newCeil.setAttribute("colspan", "4");
+        newCeil.innerHTML = "No data available";
+      }
+    })
+
+    function formatCurrency(amount) {
+      let c = parseFloat(amount/100);
+      return c.toLocaleString("en-CA", {
+        style: "currency",
+        currency: "CAD",
+      })
+    }
   </script>
 {{end}}
