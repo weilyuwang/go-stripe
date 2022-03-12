@@ -14,6 +14,7 @@
       <th>Customer</th>
       <th>Product</th>
       <th>Amount</th>
+      <th>Status</th>
     </tr>
     <tbody>
 
@@ -38,25 +39,32 @@
 
       fetch("{{.API}}/api/admin/subscriptions", requestOptions)
         .then(response => response.json())
-        .then(function (data) {
-          if (data) {
-            data.forEach(function(i) {
+        .then(function (subscriptions) {
+          if (subscriptions) {
+            subscriptions.forEach(function(sub) {
               let newRow = tbody.insertRow();
               let newCell = newRow.insertCell();
-              newCell.innerHTML = `<a href="/admin/subscriptions/${i.id}">Order #${i.id}</a>`;
+              newCell.innerHTML = `<a href="/admin/subscriptions/${sub.id}">Order #${sub.id}</a>`;
 
               newCell = newRow.insertCell();
-              let item = document.createTextNode(i.customer.last_name + ", " + i.customer.first_name);
+              let item = document.createTextNode(sub.customer.last_name + ", " + sub.customer.first_name);
               newCell.appendChild(item);
 
               newCell = newRow.insertCell();
-              item = document.createTextNode(i.widget.name);
+              item = document.createTextNode(sub.widget.name);
               newCell.appendChild(item);
 
-              let cur = formatCurrency(i.transaction.amount);
+              let cur = formatCurrency(sub.transaction.amount);
               newCell = newRow.insertCell();
               item = document.createTextNode(cur + "/month");
               newCell.appendChild(item);
+
+              newCeil = newRow.insertCell();
+              if(sub.status_id === 1) { // 1 === 'cleared', 3 === 'cancelled'
+                newCeil.innerHTML = `<span class="badge bg-success">Charged</span>`;
+              } else if (sub.status_id === 3){
+                newCeil.innerHTML = `<span class="badge bg-danger">Cancelled</span>`;
+              }
             })
           } else {
             let newRow = tbody.insertRow();
