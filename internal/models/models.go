@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	OrderStatusRefunded = 2
+	OrderStatusRefunded  = 2
+	OrderStatusCancelled = 3
 )
 
 // DBModel is the type for database connection values
