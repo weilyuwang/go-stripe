@@ -370,9 +370,15 @@ func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request
 	}
 
 	valid := signer.VerifyToken(testURL)
-
 	if !valid {
 		app.errorLog.Println("Invalid URL - tampering detected")
+		return
+	}
+
+	// make sure the link (hash) is not expired
+	expired := signer.Expired(testURL, 60)
+	if !expired {
+		app.errorLog.Println("Link expired")
 		return
 	}
 
