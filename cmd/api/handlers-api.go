@@ -235,6 +235,8 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 			ExpiryMonth:         payload.ExpiryMonth,
 			ExpiryYear:          payload.ExpiryYear,
 			TransactionStatusID: 2,
+			PaymentIntent:       subscription.ID, // note here we store the subscriptionID as the paymentIntent
+			PaymentMethod:       payload.PaymentMethod,
 		}
 
 		txnID, err := app.SaveTransaction(txn)
