@@ -40,6 +40,11 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 	td.API = app.config.api
 	td.StripeSecretKey = app.config.stripe.secret
 	td.StripePublishableKey = app.config.stripe.key
+
+	if app.Session.Exists(r.Context(), "userID") {
+		td.IsAuthenticated = 1
+	}
+
 	return td
 }
 
