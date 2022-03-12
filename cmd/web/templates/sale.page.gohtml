@@ -65,7 +65,6 @@
       fetch("{{.API}}/api/admin/sales/" + id, requestOptions)
         .then(response => response.json())
         .then(function (data) {
-          console.log(data);
           if (data) {
             document.getElementById("order-no").innerHTML = data.id;
             document.getElementById("customer").innerHTML = data.customer.first_name + " " + data.customer.last_name;

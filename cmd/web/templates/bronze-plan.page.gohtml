@@ -198,7 +198,6 @@
           fetch("{{.API}}/api/create-customer-and-subscribe-to-plan", requestOptions)
             .then(response => response.json())
             .then(response => {
-              console.log(response);
               showPayButtons();
               showCardSuccess();
               sessionStorage.first_name = document.getElementById("first-name").value
