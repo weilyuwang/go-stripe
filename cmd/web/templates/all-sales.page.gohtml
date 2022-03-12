@@ -15,6 +15,7 @@
         <th>Customer</th>
         <th>Product</th>
         <th>Amount</th>
+        <th>Status</th>
       </tr>
       </thead>
       <tbody>
@@ -42,13 +43,12 @@
     fetch("{{.API}}/api/admin/sales", requestOptions)
     .then(response => response.json())
     .then((orders) => {
-      console.log(orders);
       if(orders) {
         orders.forEach(o => {
           let newRow = tbody.insertRow();
 
           let newCeil = newRow.insertCell();
-          newCeil.innerHTML = `<a href="/admin/sales/${o.id}">Order ${o.id}</a>`
+          newCeil.innerHTML = `<a href="/admin/sales/${o.id}">Order #${o.id}</a>`
 
           newCeil = newRow.insertCell();
           let item = document.createTextNode(o.customer.last_name + ", " + o.customer.first_name);
@@ -62,6 +62,13 @@
           newCeil = newRow.insertCell();
           item = document.createTextNode(currency);
           newCeil.appendChild(item)
+
+          newCeil = newRow.insertCell();
+          if(o.status_id === 1) { // 1 === 'cleared', 2 === 'refunded'
+            newCeil.innerHTML = `<span class="badge bg-success">Charged</span>`
+          } else if (o.status_id === 2){
+            newCeil.innerHTML = `<span class="badge bg-danger">Refunded</span>`
+          }
         })
       } else {
         let newRow = tbody.insertRow();

@@ -39,12 +39,11 @@
       fetch("{{.API}}/api/admin/subscriptions", requestOptions)
         .then(response => response.json())
         .then(function (data) {
-          console.log(data);
           if (data) {
             data.forEach(function(i) {
               let newRow = tbody.insertRow();
               let newCell = newRow.insertCell();
-              newCell.innerHTML = `<a href="/admin/subscriptions/${i.id}">Order ${i.id}</a>`;
+              newCell.innerHTML = `<a href="/admin/subscriptions/${i.id}">Order #${i.id}</a>`;
 
               newCell = newRow.insertCell();
               let item = document.createTextNode(i.customer.last_name + ", " + i.customer.first_name);

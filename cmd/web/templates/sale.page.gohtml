@@ -19,15 +19,21 @@
   <hr>
 
   <a class="btn btn-info" href='{{index .StringMap "cancel"}}'>Back</a>
-  <a class="btn btn-warning" href="#!">Refund Order</a>
+  <a class="btn btn-warning" id="refund-btn" href="#!">Refund Order</a>
+
+  <input type="hidden" id="pi" value="">
+  <input type="hidden" id="charge-amount" value="">
+  <input type="hidden" id="currency" value="">
 
 {{end}}
 
 {{define "js"}}
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    const token = localStorage.getItem("token");
+    const id = window.location.pathname.split("/").pop();
+
     document.addEventListener("DOMContentLoaded", function() {
-      let token = localStorage.getItem("token");
-      let id = window.location.pathname.split("/").pop();
       const requestOptions = {
         method: 'get',
         headers: {
@@ -46,17 +52,63 @@
             document.getElementById("product").innerHTML = data.widget.name;
             document.getElementById("quantity").innerHTML = data.quantity;
             document.getElementById("amount").innerHTML = formatCurrency(data.transaction.amount);
+
+            // populate the hidden inputs so we can use them afterwards
+            document.getElementById("pi").value = data.transaction.payment_intent;
+            document.getElementById("charge-amount").value = data.transaction.amount;
+            document.getElementById("currency").value = data.transaction.currency;
           }
         })
+    })
 
-      function formatCurrency(amount) {
-        let c = parseFloat(amount / 100);
-        return c.toLocaleString("en-CA", {
-          style: 'currency',
-          currency: 'CAD',
-        })
-      }
+    function formatCurrency(amount) {
+      let c = parseFloat(amount / 100);
+      return c.toLocaleString("en-CA", {
+        style: 'currency',
+        currency: 'CAD',
+      })
+    }
 
+    document.getElementById("refund-btn").addEventListener("click" , (e) => {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to undo this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Refund'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const payload = {
+            id: parseInt(id),
+            pi: document.getElementById("pi").value,
+            amount: parseInt(document.getElementById("charge-amount").value),
+            currency: document.getElementById("currency").value,
+          }
+
+          const requestOptions = {
+            method: 'post',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify(payload),
+          }
+
+          fetch("{{.API}}/api/admin/refund", requestOptions)
+            .then(response => response.json())
+            .then(function (data) {
+              console.log(data);
+              // Swal.fire(
+              //   'Deleted!',
+              //   'Your file has been deleted.',
+              //   'success'
+              // )
+            })
+        }
+      })
     })
   </script>
 {{end}}
