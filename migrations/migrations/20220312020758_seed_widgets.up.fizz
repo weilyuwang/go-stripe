@@ -1,0 +1,2 @@
+sql("insert into widgets (name, description, inventory_level, price, image, is_recurring, plan_id, created_at, updated_at) values ('Widget', 'A very nice widget.', 10, 1000, '/static/widget.png', 0, '', now(), now());")
+sql("insert into widgets (name, description, inventory_level, price, image, is_recurring, plan_id, created_at, updated_at) values ('Bronze Plan', 'Get three widgets for the price of two every month.', 10, 2000, '', 1, 'price_1KZSfDEfLuseb67nRbMXTZkm', now(), now());")

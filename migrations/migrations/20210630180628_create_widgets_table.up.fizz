@@ -8,5 +8,3 @@ create_table("widgets") {
 
 sql("alter table widgets alter column created_at set default now();")
 sql("alter table widgets alter column updated_at set default now();")
-
-sql("insert into widgets (name, description, inventory_level, price, created_at, updated_at) values ('Widget', 'A very nice widget.', 10, 1000, now(), now());")
