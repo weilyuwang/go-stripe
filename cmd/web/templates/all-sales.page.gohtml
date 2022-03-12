@@ -43,6 +43,18 @@
       }
       html += `<li class="page-item"><a href="#!" class="page-link pager" data-page="${curPage + 1}">&gt;</a></li>`;
       p.innerHTML = html;
+
+      let pageButtons = document.getElementsByClassName("pager");
+      for (let j = 0; j < pageButtons.length; j++) {
+        pageButtons[j].addEventListener("click", (event) => {
+          let desiredPage = event.target.getAttribute("data-page");
+          console.log(desiredPage);
+          if(desiredPage >= 1 && desiredPage <= pages + 1) {
+            console.log("go to page", desiredPage)
+            updateTable(5, desiredPage);
+          }
+        })
+      }
     }
 
     function updateTable(pageSize, currentPage) {
@@ -92,14 +104,14 @@
           } else {
             let newRow = tbody.insertRow();
             let newCeil = newRow.insertCell();
-            newCeil.setAttribute("colspan", "4");
+            newCeil.setAttribute("colspan", "5");
             newCeil.innerHTML = "No data available";
           }
         })
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      updateTable(3, 1)
+      updateTable(5, 1)
     })
 
     function formatCurrency(amount) {
