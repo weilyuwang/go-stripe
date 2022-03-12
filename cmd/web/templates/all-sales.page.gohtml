@@ -7,9 +7,8 @@
 {{define "content"}}
   <h2 class="mt-5">All Sales</h2>
   <hr>
-
-    <table id="sales-table" class="table table-striped">
-      <thead>
+  <table id="sales-table" class="table table-striped">
+    <thead>
       <tr>
         <th>Transaction</th>
         <th>Customer</th>
@@ -17,79 +16,98 @@
         <th>Amount</th>
         <th>Status</th>
       </tr>
-      </thead>
-      <tbody>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-      </tbody>
-
-    </table>
+  <nav>
+    <ul id="paginator" class="pagination">
+      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+  </nav>
 
 {{end}}
 
 {{define "js"}}
   <script>
-    let currentPage = 1;
-    let pageSize = 3;
 
-    document.addEventListener("DOMContentLoaded", () => {
-    let token = localStorage.getItem("token")
-    let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0]
-
-    const requestOptions = {
-      method: "get",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token,
+    function paginator(pages, curPage) {
+      let p = document.getElementById("paginator");
+      let html = `<li class="page-item"><a href="#!" class="page-link pager" data-page="${curPage - 1}">&lt;</a></li>`;
+      for (let i = 0; i <= pages; i++) {
+        html += `<li class="page-item"><a href="#!" class="page-link pager" data-page="${i + 1}">${i + 1}</a></li>`;
       }
+      html += `<li class="page-item"><a href="#!" class="page-link pager" data-page="${curPage + 1}">&gt;</a></li>`;
+      p.innerHTML = html;
     }
-    const apiHost = "{{.API}}";
-    fetch(`${apiHost}/api/admin/sales?page_size=${pageSize}&current_page=${currentPage}`, requestOptions)
-    .then(response => response.json())
-    .then((data) => {
-      if(data.orders) {
-        data.orders.forEach(o => {
-          let newRow = tbody.insertRow();
 
-          let newCeil = newRow.insertCell();
-          newCeil.innerHTML = `<a href="/admin/sales/${o.id}">Order #${o.id}</a>`
+    function updateTable(pageSize, currentPage) {
+      let token = localStorage.getItem("token")
+      let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0]
 
-          newCeil = newRow.insertCell();
-          let item = document.createTextNode(o.customer.last_name + ", " + o.customer.first_name);
-          newCeil.appendChild(item)
+      const requestOptions = {
+        method: "get",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        }
+      }
+      const apiHost = "{{.API}}";
+      fetch(`${apiHost}/api/admin/sales?page_size=${pageSize}&page=${currentPage}`, requestOptions)
+        .then(response => response.json())
+        .then((data) => {
+          if(data.orders) {
+            data.orders.forEach(o => {
+              let newRow = tbody.insertRow();
 
-          newCeil = newRow.insertCell();
-          item = document.createTextNode(o.widget.name);
-          newCeil.appendChild(item)
+              let newCeil = newRow.insertCell();
+              newCeil.innerHTML = `<a href="/admin/sales/${o.id}">Order #${o.id}</a>`
 
-          let currency = formatCurrency(o.transaction.amount);
-          newCeil = newRow.insertCell();
-          item = document.createTextNode(currency);
-          newCeil.appendChild(item)
+              newCeil = newRow.insertCell();
+              let item = document.createTextNode(o.customer.last_name + ", " + o.customer.first_name);
+              newCeil.appendChild(item)
 
-          newCeil = newRow.insertCell();
-          if(o.status_id === 1) { // 1 === 'cleared', 2 === 'refunded'
-            newCeil.innerHTML = `<span class="badge bg-success">Charged</span>`;
-          } else if (o.status_id === 2){
-            newCeil.innerHTML = `<span class="badge bg-danger">Refunded</span>`;
+              newCeil = newRow.insertCell();
+              item = document.createTextNode(o.widget.name);
+              newCeil.appendChild(item)
+
+              let currency = formatCurrency(o.transaction.amount);
+              newCeil = newRow.insertCell();
+              item = document.createTextNode(currency);
+              newCeil.appendChild(item)
+
+              newCeil = newRow.insertCell();
+              if(o.status_id === 1) { // 1 === 'cleared', 2 === 'refunded'
+                newCeil.innerHTML = `<span class="badge bg-success">Charged</span>`;
+              } else if (o.status_id === 2){
+                newCeil.innerHTML = `<span class="badge bg-danger">Refunded</span>`;
+              }
+            })
+            paginator(data.last_page, data.current_page);
+          } else {
+            let newRow = tbody.insertRow();
+            let newCeil = newRow.insertCell();
+            newCeil.setAttribute("colspan", "4");
+            newCeil.innerHTML = "No data available";
           }
         })
-      } else {
-        let newRow = tbody.insertRow();
-        let newCeil = newRow.insertCell();
-        newCeil.setAttribute("colspan", "4");
-        newCeil.innerHTML = "No data available";
-      }
-    })
-  })
+    }
 
-
-  function formatCurrency(amount) {
-    let c = parseFloat(amount/100);
-    return c.toLocaleString("en-CA", {
-      style: "currency",
-      currency: "CAD",
+    document.addEventListener("DOMContentLoaded", () => {
+      updateTable(3, 1)
     })
-  }
+
+    function formatCurrency(amount) {
+      let c = parseFloat(amount/100);
+      return c.toLocaleString("en-CA", {
+        style: "currency",
+        currency: "CAD",
+      })
+    }
   </script>
 {{end}}

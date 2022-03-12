@@ -533,7 +533,7 @@ func (app *application) GetAllSales(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	currentPage, err := strconv.Atoi(r.URL.Query().Get("current_page"))
+	currentPage, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {
 		app.badRequest(w, err)
 		return
