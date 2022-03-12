@@ -47,7 +47,6 @@
       fetch("{{.API}}/api/admin/users", requestOptions)
         .then(response => response.json())
         .then(function (data) {
-          console.log(data);
           if (data) {
             data.forEach(function(i) {
               let newRow = tbody.insertRow();
@@ -61,7 +60,7 @@
             });
           } else {
             let newRow = tbody.insertRow();
-            let newCell = tbody.insertCell();
+            let newCell = newRow.insertCell();
             newCell.setAttribute("colspan", "2");
             newCell.innerHTML = "no data available";
           }
