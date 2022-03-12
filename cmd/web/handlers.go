@@ -46,6 +46,7 @@ func (app *application) ShowSale(w http.ResponseWriter, r *http.Request) {
 	stringMap["cancel-url"] = "/admin/all-sales"
 	stringMap["confirm-url"] = "/api/admin/refund"
 	stringMap["confirm-text"] = "Refund Order"
+	stringMap["badge-text"] = "Refunded"
 	if err := app.renderTemplate(w, r, "sale", &templateData{
 		StringMap: stringMap,
 	}); err != nil {
@@ -60,6 +61,7 @@ func (app *application) ShowSubscription(w http.ResponseWriter, r *http.Request)
 	stringMap["cancel-url"] = "/admin/all-subscriptions"
 	stringMap["confirm-url"] = "/api/admin/cancel-subscription"
 	stringMap["confirm-text"] = "Cancel Subscription"
+	stringMap["badge-text"] = "Cancelled"
 	if err := app.renderTemplate(w, r, "sale", &templateData{
 		StringMap: stringMap,
 	}); err != nil {

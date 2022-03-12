@@ -6,7 +6,7 @@
 
 {{define "content"}}
   <h2 class="mt-5">{{index .StringMap "title"}}</h2>
-  <span id="refunded" class="badge bg-danger d-none">Refunded</span>
+  <span id="refunded" class="badge bg-danger d-none">{{index .StringMap "badge-text"}}</span>
   <span id="charged" class="badge bg-success d-none">Charged</span>
   <hr>
 
@@ -83,8 +83,8 @@
               // if order status === 'cleared'
               document.getElementById("refund-btn").classList.remove("d-none");
               document.getElementById("charged").classList.remove("d-none");
-            } else if (data.status_id === 2) {
-              // if order status === 'refunded'
+            } else {
+              // if order status === 'refunded' or 'canceleled'
               document.getElementById("refunded").classList.remove("d-none");
             }
           }
