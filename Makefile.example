@@ -61,3 +61,6 @@ stop_back:
 	@-pkill -SIGTERM -f "gostripe_api -port=${API_PORT}"
 	@echo "Stopped back end"
 
+## dump: mysqldump
+dump:
+	docker exec -i ${DB_CONTAINER_NAME} mysqldump -u${DB_USER} -p${DB_PASSWORD} --databases ${DB_NAME} --skip-comments > ./migrations/dump.sql
