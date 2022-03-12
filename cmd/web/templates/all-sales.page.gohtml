@@ -50,7 +50,6 @@
           let desiredPage = event.target.getAttribute("data-page");
           console.log(desiredPage);
           if(desiredPage >= 1 && desiredPage <= pages + 1) {
-            console.log("go to page", desiredPage)
             updateTable(5, desiredPage);
           }
         })
@@ -60,6 +59,7 @@
     function updateTable(pageSize, currentPage) {
       let token = localStorage.getItem("token")
       let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0]
+      tbody.innerHTML = "";
 
       const requestOptions = {
         method: "get",
