@@ -524,7 +524,7 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
+func (app *application) GetAllSales(w http.ResponseWriter, r *http.Request) {
 	allSales, err := app.DB.GetAllOrders()
 	if err != nil {
 		app.badRequest(w, err)
@@ -532,4 +532,30 @@ func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJSON(w, http.StatusOK, allSales)
+}
+
+// GetAllSubscriptions returns all subscriptions as a slice
+func (app *application) GetAllSubscriptions(w http.ResponseWriter, r *http.Request) {
+	// get all sales from database
+	allSubscriptions, err := app.DB.GetAllSubscriptions()
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, allSubscriptions)
+}
+
+// GetSaleByID returns one sale as json, by id
+func (app *application) GetSaleByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	orderID, _ := strconv.Atoi(id)
+
+	order, err := app.DB.GetOrderByID(orderID)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, order)
 }

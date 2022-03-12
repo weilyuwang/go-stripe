@@ -39,6 +39,30 @@ func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ShowSale shows one sale page
+func (app *application) ShowSale(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["title"] = "Sale"
+	stringMap["cancel"] = "/admin/all-sales"
+	if err := app.renderTemplate(w, r, "sale", &templateData{
+		StringMap: stringMap,
+	}); err != nil {
+		app.errorLog.Print(err)
+	}
+}
+
+// ShowSubscription shows one subscription page
+func (app *application) ShowSubscription(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["title"] = "Subscription"
+	stringMap["cancel"] = "/admin/all-subscriptions"
+	if err := app.renderTemplate(w, r, "sale", &templateData{
+		StringMap: stringMap,
+	}); err != nil {
+		app.errorLog.Print(err)
+	}
+}
+
 type TransactionData struct {
 	FirstName       string
 	LastName        string

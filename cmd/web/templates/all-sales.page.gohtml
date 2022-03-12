@@ -39,7 +39,7 @@
       }
     }
 
-    fetch("{{.API}}/api/admin/all-sales", requestOptions)
+    fetch("{{.API}}/api/admin/sales", requestOptions)
     .then(response => response.json())
     .then((orders) => {
       console.log(orders);
