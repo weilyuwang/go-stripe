@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/weilyuwang/go-stripe/internal/cards"
+	"github.com/weilyuwang/go-stripe/internal/encryption"
 	"github.com/weilyuwang/go-stripe/internal/models"
 	"github.com/weilyuwang/go-stripe/internal/urlsigner"
 	"net/http"
@@ -354,14 +355,15 @@ func (app *application) PostLoginPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+func (app *application) ShowForgotPasswordPage(w http.ResponseWriter, r *http.Request) {
 	if err := app.renderTemplate(w, r, "forgot-password", &templateData{}); err != nil {
 		app.errorLog.Println(err)
 		return
 	}
 }
 
-func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request) {
+func (app *application) ShowResetPasswordPage(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
 	theURL := r.RequestURI
 	testURL := fmt.Sprintf("%s%s", app.config.frontend, theURL)
 
@@ -377,13 +379,24 @@ func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request
 
 	// make sure the link (hash) is not expired
 	expired := signer.Expired(testURL, 60)
-	if !expired {
+	if expired {
 		app.errorLog.Println("Link expired")
 		return
 	}
 
+	// encrypt the email
+	encryptor := encryption.Encryption{
+		Key: []byte(app.config.secretKey),
+	}
+
+	encryptedEmail, err := encryptor.Encrypt(email)
+	if err != nil {
+		app.errorLog.Println("Email encryption failed")
+		return
+	}
+
 	data := make(map[string]interface{})
-	data["email"] = r.URL.Query().Get("email")
+	data["email"] = encryptedEmail
 
 	if err := app.renderTemplate(w, r, "reset-password", &templateData{
 		Data: data,

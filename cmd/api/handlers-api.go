@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/weilyuwang/go-stripe/internal/cards"
+	"github.com/weilyuwang/go-stripe/internal/encryption"
 	"github.com/weilyuwang/go-stripe/internal/models"
 	"github.com/weilyuwang/go-stripe/internal/urlsigner"
 	"golang.org/x/crypto/bcrypt"
@@ -483,7 +484,18 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.DB.GetUserByEmail(payload.Email)
+	// decrypt the encrypted email
+	encryptor := encryption.Encryption{
+		Key: []byte(app.config.secretKey),
+	}
+
+	email, err := encryptor.Decrypt(payload.Email)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	user, err := app.DB.GetUserByEmail(email)
 	if err != nil {
 		app.badRequest(w, err)
 		return
