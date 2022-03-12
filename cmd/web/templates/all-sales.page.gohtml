@@ -28,6 +28,10 @@
 
 {{define "js"}}
   <script>
+    let currentPage = 1;
+    let pageSize = 3;
+
+    document.addEventListener("DOMContentLoaded", () => {
     let token = localStorage.getItem("token")
     let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0]
 
@@ -39,12 +43,12 @@
         "Authorization": "Bearer " + token,
       }
     }
-
-    fetch("{{.API}}/api/admin/sales", requestOptions)
+    const apiHost = "{{.API}}";
+    fetch(`${apiHost}/api/admin/sales?page_size=${pageSize}&current_page=${currentPage}`, requestOptions)
     .then(response => response.json())
-    .then((orders) => {
-      if(orders) {
-        orders.forEach(o => {
+    .then((data) => {
+      if(data.orders) {
+        data.orders.forEach(o => {
           let newRow = tbody.insertRow();
 
           let newCeil = newRow.insertCell();
@@ -77,13 +81,15 @@
         newCeil.innerHTML = "No data available";
       }
     })
+  })
 
-    function formatCurrency(amount) {
-      let c = parseFloat(amount/100);
-      return c.toLocaleString("en-CA", {
-        style: "currency",
-        currency: "CAD",
-      })
-    }
+
+  function formatCurrency(amount) {
+    let c = parseFloat(amount/100);
+    return c.toLocaleString("en-CA", {
+      style: "currency",
+      currency: "CAD",
+    })
+  }
   </script>
 {{end}}

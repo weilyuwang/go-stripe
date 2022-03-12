@@ -327,9 +327,12 @@ func (m *DBModel) UpdatePasswordForUser(u User, hash string) error {
 	return nil
 }
 
-func (m *DBModel) GetAllOrders() ([]*Order, error) {
+// GetAllOrdersPaginated returns a slice of a subset of orders
+func (m *DBModel) GetAllOrdersPaginated(pageSize, page int) ([]*Order, int, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
+	offset := (page - 1) * pageSize
 
 	var orders []*Order
 
@@ -347,11 +350,12 @@ func (m *DBModel) GetAllOrders() ([]*Order, error) {
 		left join customers c on c.id = o.customer_id
 	where w.is_recurring = 0
 	order by o.created_at desc
+	limit ? offset ?
 	`
 
-	rows, err := m.DB.QueryContext(ctx, query)
+	rows, err := m.DB.QueryContext(ctx, query, pageSize, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, 0, err
 	}
 	defer rows.Close()
 
@@ -383,12 +387,29 @@ func (m *DBModel) GetAllOrders() ([]*Order, error) {
 			&o.Customer.Email,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, 0, err
 		}
 		orders = append(orders, &o)
 	}
 
-	return orders, nil
+	query = `
+		select count(o.id)
+		from orders o 
+		left join widgets w on (o.widget_id = w.id)
+		where
+		w.is_recurring = 0
+	`
+
+	var totalRecords int
+	countRow := m.DB.QueryRowContext(ctx, query)
+	err = countRow.Scan(&totalRecords)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+
+	lastPage := totalRecords / pageSize
+
+	return orders, lastPage, totalRecords, nil
 }
 
 // GetAllSubscriptions returns a slice of all subscriptions

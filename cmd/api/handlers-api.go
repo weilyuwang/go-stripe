@@ -527,13 +527,38 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) GetAllSales(w http.ResponseWriter, r *http.Request) {
-	allSales, err := app.DB.GetAllOrders()
+	pageSize, err := strconv.Atoi(r.URL.Query().Get("page_size"))
 	if err != nil {
 		app.badRequest(w, err)
 		return
 	}
 
-	app.writeJSON(w, http.StatusOK, allSales)
+	currentPage, err := strconv.Atoi(r.URL.Query().Get("current_page"))
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	allSales, lastPage, totalRecords, err := app.DB.GetAllOrdersPaginated(pageSize, currentPage)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	var resp struct {
+		CurrentPage  int             `json:"current_page"`
+		PageSize     int             `json:"page_size"`
+		LastPage     int             `json:"last_page"`
+		TotalRecords int             `json:"total_records"`
+		Orders       []*models.Order `json:"orders"`
+	}
+	resp.CurrentPage = currentPage
+	resp.PageSize = pageSize
+	resp.LastPage = lastPage
+	resp.TotalRecords = totalRecords
+	resp.Orders = allSales
+
+	app.writeJSON(w, http.StatusOK, resp)
 }
 
 // GetAllSubscriptions returns all subscriptions as a slice
