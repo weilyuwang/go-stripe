@@ -536,6 +536,7 @@ func (m *DBModel) GetOrderByID(id int) (Order, error) {
 	return o, nil
 }
 
+// UpdateOrderStatus updates the status of order to the supplied statusID by order id
 func (m *DBModel) UpdateOrderStatus(id, statusID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
