@@ -34,12 +34,13 @@
 
 {{define "js"}}
   <script>
-
     function paginator(pages, curPage) {
       let p = document.getElementById("paginator");
       let html = `<li class="page-item"><a href="#!" class="page-link pager" data-page="${curPage - 1}">&lt;</a></li>`;
       for (let i = 0; i <= pages; i++) {
-        html += `<li class="page-item"><a href="#!" class="page-link pager" data-page="${i + 1}">${i + 1}</a></li>`;
+        const classList = curPage === i + 1 ? "page-item active" : "page-item";
+        const html_pager = `<li class="${classList}"><a href="#!" class="page-link pager" data-page="${i + 1}">${i + 1}</a></li>`;
+        html += html_pager;
       }
       html += `<li class="page-item"><a href="#!" class="page-link pager" data-page="${curPage + 1}">&gt;</a></li>`;
       p.innerHTML = html;
@@ -48,7 +49,6 @@
       for (let j = 0; j < pageButtons.length; j++) {
         pageButtons[j].addEventListener("click", (event) => {
           let desiredPage = event.target.getAttribute("data-page");
-          console.log(desiredPage);
           if(desiredPage >= 1 && desiredPage <= pages + 1) {
             updateTable(5, desiredPage);
           }
