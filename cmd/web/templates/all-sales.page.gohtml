@@ -65,9 +65,9 @@
 
           newCeil = newRow.insertCell();
           if(o.status_id === 1) { // 1 === 'cleared', 2 === 'refunded'
-            newCeil.innerHTML = `<span class="badge bg-success">Charged</span>`
+            newCeil.innerHTML = `<span class="badge bg-success">Charged</span>`;
           } else if (o.status_id === 2){
-            newCeil.innerHTML = `<span class="badge bg-danger">Refunded</span>`
+            newCeil.innerHTML = `<span class="badge bg-danger">Refunded</span>`;
           }
         })
       } else {
