@@ -96,6 +96,7 @@ func (c *Card) SubscribeToPlan(sc *stripe.Customer, plan, email, last4, cardType
 
 func (c *Card) CreateCustomer(pm, email string) (*stripe.Customer, string, error) {
 	stripe.Key = c.Secret
+
 	customerParams := &stripe.CustomerParams{
 		PaymentMethod: stripe.String(pm),
 		Email:         stripe.String(email),
@@ -117,6 +118,7 @@ func (c *Card) CreateCustomer(pm, email string) (*stripe.Customer, string, error
 
 func (c *Card) Refund(pi string, amount int) error {
 	stripe.Key = c.Secret
+
 	amountToRefund := int64(amount)
 	refundParams := &stripe.RefundParams{
 		Amount:        &amountToRefund,
@@ -124,6 +126,21 @@ func (c *Card) Refund(pi string, amount int) error {
 	}
 
 	_, err := refund.New(refundParams)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Card) CancelSubscription(subID string) error {
+	stripe.Key = c.Secret
+
+	params := &stripe.SubscriptionParams{
+		CancelAtPeriodEnd: stripe.Bool(true),
+	}
+
+	_, err := sub.Update(subID, params)
 	if err != nil {
 		return err
 	}
