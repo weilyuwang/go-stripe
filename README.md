@@ -44,7 +44,7 @@ STRIPE_SECRET=
 // Secret Key (must be the same as frontend SECRET_KEY)
 SECRET_KEY=
 
-// smtp (e.g. can use mailtrap.io)
+// smtp (e.g. mailtrap.io)
 SMTP_USERNAME=
 SMTP_PASSWORD=
 ```
