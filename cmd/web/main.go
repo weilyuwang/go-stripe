@@ -112,6 +112,9 @@ func main() {
 		Session:       sessionManager,
 	}
 
+	// listening for websocket channel in the background
+	go app.ListenToWsChan()
+
 	err = app.serve()
 	if err != nil {
 		app.errorLog.Println(err)
