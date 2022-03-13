@@ -683,3 +683,94 @@ func (app *application) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, allUsers)
 }
+
+// GetOneUser gets one user by id (from the url) and returns it as JSON
+func (app *application) GetOneUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, _ := strconv.Atoi(id)
+
+	user, err := app.DB.GetOneUser(userID)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, user)
+}
+
+// UpdateOrCreateUser is the handler for adding or editing an existing user
+func (app *application) UpdateOrCreateUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, _ := strconv.Atoi(id)
+
+	var user models.User
+
+	err := app.readJSON(w, r, &user)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	if userID > 0 {
+		// Update an existing user
+		err = app.DB.EditUser(user)
+		if err != nil {
+			app.badRequest(w, err)
+			return
+		}
+
+		if user.Password != "" {
+			newHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+			if err != nil {
+				app.badRequest(w, err)
+				return
+			}
+
+			err = app.DB.UpdatePasswordForUser(user, string(newHash))
+			if err != nil {
+				app.badRequest(w, err)
+				return
+			}
+		}
+	} else {
+		// Create a new user
+		newHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+		if err != nil {
+			app.badRequest(w, err)
+			return
+		}
+		err = app.DB.AddUser(user, string(newHash))
+		if err != nil {
+			app.badRequest(w, err)
+			return
+		}
+	}
+
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	resp.Error = false
+	app.writeJSON(w, http.StatusOK, resp)
+}
+
+// DeleteUser deletes a user, and all associated tokens, from the database
+func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, _ := strconv.Atoi(id)
+
+	err := app.DB.DeleteUser(userID)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
+
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	resp.Error = false
+	app.writeJSON(w, http.StatusOK, resp)
+}
