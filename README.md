@@ -23,13 +23,38 @@ soda migrate
 docker exec -i [CONTAINER_NAME] mysqldump -uroot -p[ROOT_PASSWORD] --databases [DB_NAME] --skip-comments > [YOUR_PATH]/dump.sql
 ```
 
+### Environment variables required in order to spin up the app
+
+#### Frontend (cmd/web)
+```
+// stripe
+STRIPE_KEY=
+STRIPE_SECRET=
+
+// Secret Key (256 bits/32 chars)
+SECRET_KEY=
+```
+
+#### Backend (cmd/api)
+```
+// stripe
+STRIPE_KEY=
+STRIPE_SECRET=
+
+// Secret Key (must be the same as frontend SECRET_KEY)
+SECRET_KEY=
+
+// smtp (e.g. can use mailtrap.io)
+SMTP_USERNAME=
+SMTP_PASSWORD=
+```
 
 ### Live-loading command line utility (optional)
 
 #### [Air](https://github.com/cosmtrek/air)
 
 
-### Go Modules
+### Main Go Modules Used in this project
 
 #### [chi: HTTP router](https://github.com/go-chi/chi)
 #### [Go Stripe SDK](https://github.com/stripe/stripe-go)
@@ -37,3 +62,4 @@ docker exec -i [CONTAINER_NAME] mysqldump -uroot -p[ROOT_PASSWORD] --databases [
 #### [MySQL based session store for SCS](https://github.com/alexedwards/scs/tree/master/mysqlstore)
 #### [SMTP Client for sending email](https://github.com/xhit/go-simple-mail)
 #### [MAC signer](https://github.com/bwmarrin/go-alone)
+#### [gorilla websocket](https://github.com/gorilla/websocket)
