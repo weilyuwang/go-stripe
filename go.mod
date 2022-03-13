@@ -10,13 +10,16 @@ require (
 	github.com/stripe/stripe-go/v72 v72.86.0
 )
 
-require golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70
+require (
+	github.com/alexedwards/scs/mysqlstore v0.0.0-20220216073957-c252878bcf5a
+	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631
+	github.com/gorilla/websocket v1.5.0
+	github.com/xhit/go-simple-mail/v2 v2.11.0
+	golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70
+)
 
 require (
-	github.com/alexedwards/scs/mysqlstore v0.0.0-20220216073957-c252878bcf5a // indirect
-	github.com/bwmarrin/go-alone v0.0.0-20190806015146-742bb55d1631 // indirect
-	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/go-test/deep v1.0.8 // indirect
 	github.com/toorop/go-dkim v0.0.0-20201103131630-e1cd1a0a5208 // indirect
-	github.com/xhit/go-simple-mail/v2 v2.11.0 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 )
