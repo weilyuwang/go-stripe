@@ -667,6 +667,7 @@ func (m *DBModel) AddUser(u User, hash string) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -680,6 +681,14 @@ func (m *DBModel) DeleteUser(id int) error {
 	if err != nil {
 		return err
 	}
+
+	// Also remove the token from DB
+	stmt = "delete from tokens where user_id = ?"
+	_, err = m.DB.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 
 }
