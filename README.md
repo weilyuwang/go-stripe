@@ -49,10 +49,6 @@ SMTP_USERNAME=
 SMTP_PASSWORD=
 ```
 
-### Live-loading command line utility (optional)
-
-#### [Air](https://github.com/cosmtrek/air)
-
 
 ### Main Go Modules Used in this project
 
