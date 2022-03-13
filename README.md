@@ -23,7 +23,7 @@ soda migrate
 docker exec -i [CONTAINER_NAME] mysqldump -uroot -p[ROOT_PASSWORD] --databases [DB_NAME] --skip-comments > [YOUR_PATH]/dump.sql
 ```
 
-### Environment variables required in order to spin up the app
+### Environment variables required
 
 #### Frontend (cmd/web)
 ```
