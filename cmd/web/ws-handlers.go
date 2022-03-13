@@ -15,6 +15,7 @@ type WsPayload struct {
 	Message     string              `json:"message"`
 	UserName    string              `json:"user_name"`
 	MessageType string              `json:"message_type"`
+	UserID      int                 `json:"user_id"`
 	Conn        WebSocketConnection `json:"-"`
 }
 
@@ -79,6 +80,7 @@ func (app *application) ListenForWS(conn *WebSocketConnection) {
 		if err != nil {
 			// do nothing
 		} else {
+			// send the message coming from the client to websocket channel
 			payload.Conn = *conn
 			wsChan <- payload
 		}
@@ -88,11 +90,13 @@ func (app *application) ListenForWS(conn *WebSocketConnection) {
 func (app *application) ListenToWsChan() {
 	var response WsJsonResponse
 	for {
+		// listening for any messages coming from the websocket channel
 		e := <-wsChan
 		switch e.Action {
 		case "deleteUser":
 			response.Action = "logout"
 			response.Message = "Your account has been deleted"
+			response.UserID = e.UserID // user that we are going to log out
 			app.broadcastToAll(response)
 		default:
 		}
