@@ -6,7 +6,7 @@ A sample E-Commerce application that consists of multiple, separate applications
 - A front end, rendered using Go's rich html/template package and services content to the end user as web pages.
 - A restful back end API, which is called by the front end as necessary.
 - A microservice that's dynamically building PDF invoices and sending them to customers as an email attachment.
-All of these components (front end, back end, and microservice) will be built using a single code base that produces multiple binaries.
+- All of these components (front end, back end, and microservice) will be built using a single code base that produces multiple binaries.
 
 
 ### Functionalities
