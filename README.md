@@ -1,5 +1,27 @@
 # GO Stripe
 
+### Components
+
+A sample E-Commerce application that consists of multiple, separate applications: 
+- A front end, rendered using Go's rich html/template package and services content to the end user as web pages.
+- A restful back end API, which is called by the front end as necessary.
+- A microservice that's dynamically building PDF invoices and sending them to customers as an email attachment.
+All of these components (front end, back end, and microservice) will be built using a single code base that produces multiple binaries.
+
+
+### Functionalities
+
+The application:
+- allows users to purchase a single product.
+- allows users to purchase a recurring monthly subscription (a Stripe plan).
+- handles subscription cancellations and refunds.
+- saves all transaction information to a MariaDB database (for refunds, reporting, etc.).
+- secures access to the frontend via session authentication.
+- secures access to the backend API via stateful tokens.
+- manages users (add/edit/delete).
+- allows users to reset their passwords safely and securely.
+- supports logging a user out and cancel their account instantly, over websockets.
+- produces PDF invoices and sends them via email to the customers.
 
 ### MariaDB database
 
