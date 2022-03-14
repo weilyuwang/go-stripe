@@ -67,7 +67,7 @@ stop_front:
 stop_back:
 	@echo "Stopping the back end..."
 	@-pkill -SIGTERM -f "gostripe_api -port=${API_PORT}"
-	@echo "Stopped back end
+	@echo "Stopped back end"
 
 ## stop_invoice: stops the invoice microservice
 stop_invoice:
