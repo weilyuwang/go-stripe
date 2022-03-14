@@ -2,10 +2,6 @@ STRIPE_SECRET=
 STRIPE_KEY=
 GOSTRIPE_PORT=4000
 API_PORT=4001
-DB_CONTAINER_NAME=go-stripe_mariadb_1
-DB_NAME=widgets
-DB_USER=root
-DB_PASSWORD=secret
 
 ## build: builds all binaries
 build: clean build_front build_back
@@ -30,8 +26,14 @@ build_back:
 	@go build -o dist/gostripe_api ./cmd/api
 	@echo "Back end built!"
 
-## start: starts front and back end
-start: start_front start_back
+## build_invoice: builds the invoice microservice
+build_invoice:
+  @echo "Building invoice microservice..."
+  @go build -o dist/invoice ./cmd/micro/invoice
+  @echo "Invoice microservice built!"
+
+## start: starts front, back end and invoice microservice
+start: start_front start_back start_invoice
 
 ## start_front: starts the front end
 start_front: build_front
@@ -45,8 +47,14 @@ start_back: build_back
 	@env STRIPE_KEY=${STRIPE_KEY} STRIPE_SECRET=${STRIPE_SECRET} ./dist/gostripe_api -port=${API_PORT} &
 	@echo "Back end running!"
 
-## stop: stops the front and back end
-stop: stop_front stop_back
+## start_invoice: starts the invoice microservice
+start_invoice: build_invoice
+	@echo "Starting the invoice microservice..."
+	@./dist/invoice &
+	@echo "Invoice microservice running!"
+
+## stop: stops the front, back end and invoice microservice
+stop: stop_front stop_back stop_invoice
 	@echo "All applications stopped"
 
 ## stop_front: stops the front end
@@ -59,8 +67,10 @@ stop_front:
 stop_back:
 	@echo "Stopping the back end..."
 	@-pkill -SIGTERM -f "gostripe_api -port=${API_PORT}"
-	@echo "Stopped back end"
+	@echo "Stopped back end
 
-## dump: mysqldump
-dump:
-	docker exec -i ${DB_CONTAINER_NAME} mysqldump -u${DB_USER} -p${DB_PASSWORD} --databases ${DB_NAME} --skip-comments > ./migrations/dump.sql
+## stop_invoice: stops the invoice microservice
+stop_invoice:
+  @echo "Stopping the invoice microservice..."
+  @-pkill -SIGTERM -f "invoice"
+  @echo "Stopped invoice microservice"

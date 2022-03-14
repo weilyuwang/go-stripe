@@ -44,9 +44,9 @@ soda migrate
 docker exec -i [CONTAINER_NAME] mysqldump -uroot -p[ROOT_PASSWORD] --databases [DB_NAME] --skip-comments > [YOUR_PATH]/dump.sql
 ```
 
-### Environment variables required
+### Environment variables required for each app component
 
-#### Frontend (cmd/web)
+#### Frontend (cmd/web/main.go)
 ```
 // stripe
 STRIPE_KEY=
@@ -56,7 +56,7 @@ STRIPE_SECRET=
 SECRET_KEY=
 ```
 
-#### Backend (cmd/api)
+#### Backend (cmd/api/api.go)
 ```
 // stripe
 STRIPE_KEY=
@@ -69,7 +69,12 @@ SECRET_KEY=
 SMTP_USERNAME=
 SMTP_PASSWORD=
 ```
-
+#### Invoice Microservice (cmd/micro/invoice/invoice.go)
+```
+// smtp (e.g. mailtrap.io)
+SMTP_USERNAME=
+SMTP_PASSWORD=
+```
 
 ### Main Go Modules Used in this project
 
