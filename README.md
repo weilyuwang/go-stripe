@@ -78,10 +78,11 @@ SMTP_PASSWORD=
 
 ### Main Go Modules Used in this project
 
-#### [chi: HTTP router](https://github.com/go-chi/chi)
-#### [Go Stripe SDK](https://github.com/stripe/stripe-go)
-#### [SCS Session Manager](https://github.com/alexedwards/scs)
-#### [MySQL based session store for SCS](https://github.com/alexedwards/scs/tree/master/mysqlstore)
-#### [SMTP Client for sending email](https://github.com/xhit/go-simple-mail)
-#### [MAC signer](https://github.com/bwmarrin/go-alone)
-#### [gorilla websocket](https://github.com/gorilla/websocket)
+#### [go-chi/chi: HTTP router](https://github.com/go-chi/chi)
+#### [stripe-go: Go Stripe SDK](https://github.com/stripe/stripe-go)
+#### [scs: session manager](https://github.com/alexedwards/scs)
+#### [scs/mysqlstore: MySQL-based session manager](https://github.com/alexedwards/scs/tree/master/mysqlstore)
+#### [go-simple-mail: SMTP Client](https://github.com/xhit/go-simple-mail)
+#### [go-alone: MAC signer](https://github.com/bwmarrin/go-alone)
+#### [gorilla/websocket: WebSocket implementation](https://github.com/gorilla/websocket)
+#### [gofpdf: PDF document generator](https://github.com/phpdave11/gofpdf)
