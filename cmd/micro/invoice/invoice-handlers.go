@@ -26,9 +26,15 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	err := app.readJSON(w, r, &order)
 	if err != nil {
 		app.badRequest(w, err)
+		return
 	}
 
 	// generate a pdf invoice
+	err = app.createInvoicePDF(order)
+	if err != nil {
+		app.badRequest(w, err)
+		return
+	}
 
 	// create mail
 
