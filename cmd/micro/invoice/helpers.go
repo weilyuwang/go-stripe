@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"os"
 )
 
 // writeJSON writes arbitrary data out as JSON
@@ -60,6 +61,18 @@ func (app *application) badRequest(w http.ResponseWriter, err error) error {
 	er := app.writeJSON(w, http.StatusBadRequest, payload)
 	if er != nil {
 		return er
+	}
+	return nil
+}
+
+func (app *application) CreateDirIfNotExist(path string) error {
+	const mode = 0755
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.Mkdir(path, mode)
+		if err != nil {
+			app.errorLog.Println(err)
+			return err
+		}
 	}
 	return nil
 }
