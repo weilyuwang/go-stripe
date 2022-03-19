@@ -43,7 +43,9 @@ func (app *application) SendMail(from, to, subject, tmpl string, data interface{
 
 	plainMessage := tpl.String()
 
-	app.infoLog.Println(formattedMessage, plainMessage)
+	if app.config.env == "development" {
+		app.infoLog.Println(formattedMessage, plainMessage)
+	}
 
 	// SMTP Server
 	server := mail.NewSMTPClient()
