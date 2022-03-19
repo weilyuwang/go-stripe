@@ -29,8 +29,9 @@ type config struct {
 		username string
 		password string
 	}
-	secretKey string
-	frontend  string
+	secretKey      string
+	frontend       string
+	invoiceService string
 }
 
 type application struct {
@@ -64,6 +65,7 @@ func main() {
 	flag.StringVar(&cfg.smtp.host, "smtphost", "smtp.mailtrap.io", "smtp host")
 	flag.IntVar(&cfg.smtp.port, "smtpport", 587, "smtp port")
 	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to front end")
+	flag.StringVar(&cfg.invoiceService, "invoice microservice", "http://localhost:5000", "url to invoice microservice")
 	flag.Parse()
 
 	// stripe

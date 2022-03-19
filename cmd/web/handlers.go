@@ -232,7 +232,7 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// call invoice microservice
+	// call invoice microservice to generate invoice PDF and sent it to the customer
 	inv := Invoice{
 		ID:        orderID,
 		Quantity:  order.Quantity,
@@ -277,7 +277,6 @@ func (app *application) callInvoiceMicro(inv Invoice) error {
 	}
 	defer resp.Body.Close()
 
-	app.infoLog.Println(resp.Body)
 	return nil
 }
 
