@@ -28,3 +28,6 @@ dist
 
 # ignore Makefile as it contains stripe secret key
 Makefile
+
+# Ignore invoice pdf
+invoices

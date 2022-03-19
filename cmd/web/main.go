@@ -31,8 +31,9 @@ type config struct {
 		secret string
 		key    string
 	}
-	secretKey string
-	frontend  string
+	secretKey      string
+	frontend       string
+	invoiceService string
 }
 
 type application struct {
@@ -70,6 +71,7 @@ func main() {
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
 	flag.StringVar(&cfg.db.dsn, "dsn", "widgets:widgets@tcp(localhost:3306)/widgets?parseTime=true&tls=false", "DSN")
 	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to front end")
+	flag.StringVar(&cfg.invoiceService, "invoice microservice", "http://localhost:5000", "url to invoice microservice")
 
 	flag.Parse()
 

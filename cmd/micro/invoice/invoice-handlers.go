@@ -25,6 +25,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 
 	err := app.readJSON(w, r, &order)
 	if err != nil {
+		app.errorLog.Println(err)
 		app.badRequest(w, err)
 		return
 	}
@@ -32,6 +33,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	// generate a pdf invoice
 	err = app.createInvoicePDF(order)
 	if err != nil {
+		app.errorLog.Println(err)
 		app.badRequest(w, err)
 		return
 	}
@@ -44,7 +46,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	// send mail with attachment
 	err = app.SendMail("info@widgets.com", order.Email, "Your invoice", "invoice", attachments, nil)
 	if err != nil {
-		app.badRequest(w, err)
+		app.errorLog.Println(err)
 		return
 	}
 
