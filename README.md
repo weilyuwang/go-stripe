@@ -52,7 +52,7 @@ docker exec -i [CONTAINER_NAME] mysqldump -uroot -p[ROOT_PASSWORD] --databases [
 STRIPE_KEY=
 STRIPE_SECRET=
 
-// Secret Key (256 bits/32 chars)
+// Secret Key (Must be 256 bits/32 chars)
 SECRET_KEY=
 ```
 
@@ -75,6 +75,11 @@ SMTP_PASSWORD=
 SMTP_USERNAME=
 SMTP_PASSWORD=
 ```
+
+### Start the app (with Makefile)
+- Fill out the ENV's at the top of the `makefile.example`
+- Rename `Makefile.example` to `Makefile`
+- Run `make start` to start all the app components
 
 ### Main Go Modules Used in this project
 
