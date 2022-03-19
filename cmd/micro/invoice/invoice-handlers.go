@@ -47,6 +47,7 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	err = app.SendMail("info@widgets.com", order.Email, "Your invoice", "invoice", attachments, nil)
 	if err != nil {
 		app.errorLog.Println(err)
+		app.badRequest(w, err)
 		return
 	}
 
