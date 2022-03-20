@@ -12,6 +12,7 @@ import (
 	"github.com/weilyuwang/go-stripe/internal/encryption"
 	"github.com/weilyuwang/go-stripe/internal/models"
 	"github.com/weilyuwang/go-stripe/internal/urlsigner"
+	"github.com/weilyuwang/go-stripe/internal/validator"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
@@ -199,6 +200,15 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		app.errorLog.Println(err)
+		return
+	}
+
+	// validate stripe payload data
+	v := validator.New()
+	v.Check(len(payload.FirstName) > 1, "first_name", "first name must be at least 2 characters")
+	v.Check(payload.LastName == "", "last_name", "last name must not be empty")
+	if !v.Valid() {
+		app.failedValidation(w, r, v.Errors)
 		return
 	}
 
