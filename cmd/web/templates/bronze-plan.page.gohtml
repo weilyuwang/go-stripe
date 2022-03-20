@@ -30,13 +30,15 @@
       <hr>
 
       <div class="mb-3">
-        <label for="first-name" class="form-label">First Name</label>
-        <input type="text" class="form-control" id="first-name" name="first_name" required autocomplete="first-name-new">
+        <label for="first_name" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="first_name" name="first_name" required autocomplete="first_name-new">
+        <div id="first_name-help" class="valid-feedback"></div>
       </div>
 
       <div class="mb-3">
-        <label for="last-name" class="form-label">Last Name</label>
-        <input type="text" class="form-control" id="last-name" name="last_name" required autocomplete="last-name-new">
+        <label for="last_name" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="last_name" name="last_name" required autocomplete="last_name-new">
+        <div id="last_name-help" class="valid-feedback"></div>
       </div>
 
       <div class="mb-3">
@@ -182,8 +184,8 @@
             exp_month: result.paymentMethod.card.exp_month,
             exp_year: result.paymentMethod.card.exp_year,
             amount:  document.getElementById("amount").value,
-            first_name: document.getElementById("first-name").value,
-            last_name: document.getElementById("last-name").value,
+            first_name: document.getElementById("first_name").value,
+            last_name: document.getElementById("last_name").value,
           }
 
           const requestOptions = {
@@ -197,18 +199,32 @@
 
           fetch("{{.API}}/api/create-customer-and-subscribe-to-plan", requestOptions)
             .then(response => response.json())
-            .then(response => {
-              showPayButtons();
-              showCardSuccess();
-              sessionStorage.first_name = document.getElementById("first-name").value
-              sessionStorage.last_name = document.getElementById("last-name").value
-              sessionStorage.email = document.getElementById("cardholder-email").value
-              sessionStorage.amount = "{{formatCurrency $widget.Price}}"
-              sessionStorage.last_four = result.paymentMethod.card.last4
-              sessionStorage.exp_month = result.paymentMethod.card.exp_month
-              sessionStorage.exp_year = result.paymentMethod.card.exp_year
-
-              location.href = "/receipt/bronze"
+            .then(data => {
+              if (!data.error || data.error === false) {
+                showPayButtons();
+                showCardSuccess();
+                sessionStorage.first_name = document.getElementById("first_name").value
+                sessionStorage.last_name = document.getElementById("last_name").value
+                sessionStorage.email = document.getElementById("cardholder-email").value
+                sessionStorage.amount = "{{formatCurrency $widget.Price}}"
+                sessionStorage.last_four = result.paymentMethod.card.last4
+                sessionStorage.exp_month = result.paymentMethod.card.exp_month
+                sessionStorage.exp_year = result.paymentMethod.card.exp_year
+                // redirect to the receipt page
+                location.href = "/receipt/bronze"
+              } else {
+                // something went wrong, e.g. server-side validation failed
+                document.getElementById("charge_form").classList.remove("was-validated")
+                // get the errors
+                Object.entries(data.errors).forEach(e => {
+                  const [key, value] = e;
+                  document.getElementById(key).classList.add("is-invalid")
+                  document.getElementById(key + "-help").classList.remove("valid-feedback")
+                  document.getElementById(key + "-help").classList.add("invalid-feedback")
+                  document.getElementById(key + "-help").innerText = value;
+                })
+                showPayButtons();
+              }
             })
         }
       }

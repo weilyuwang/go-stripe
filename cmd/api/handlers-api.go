@@ -206,7 +206,7 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 	// validate stripe payload data
 	v := validator.New()
 	v.Check(len(payload.FirstName) > 1, "first_name", "first name must be at least 2 characters")
-	v.Check(payload.LastName == "", "last_name", "last name must not be empty")
+	v.Check(payload.LastName != "", "last_name", "last name must not be empty")
 	if !v.Valid() {
 		app.failedValidation(w, r, v.Errors)
 		return
